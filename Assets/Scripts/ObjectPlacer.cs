@@ -1,3 +1,5 @@
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
@@ -7,12 +9,20 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField, Range(5, 30)] private float maxObjectPlacementDistance = 10;
     [SerializeField] private Transform objectToPlace;
     [SerializeField] private Transform objectPlaceHolder;
+    [SerializeField] private PlaceableObjectData[] objectPool;
 
     private Camera mainCamera;
+    private bool hasCancelledPlacement = true;
+
+    Transform wall;
+    Transform wallPreveiew;
 
     private void Start()
     {
         mainCamera = Camera.main;
+
+        wall = objectPool[0].objectPrefab;
+        wallPreveiew = objectPool[0].objectPreview;
     }
 
     private void Update()
@@ -32,44 +42,79 @@ public class ObjectPlacer : MonoBehaviour
         Vector3 hitNorm;
         Vector3 currentHitPos = Vector3.zero;
 
-        if(Physics.Raycast(ray, out hitInfo, maxObjectPlacementDistance, layerToPlaceObjects))
+        bool isRayHitSurface = Physics.Raycast(ray, out hitInfo, maxObjectPlacementDistance, layerToPlaceObjects);
+
+        if (isRayHitSurface)
         {
             hitPos = hitInfo.point;
             hitNorm = hitInfo.normal;
-            Quaternion rotation = Quaternion.identity;
 
-            Debug.DrawRay(mainCameraPos, hitPos);
+            //Debug.DrawRay(mainCameraPos, hitPos);
+
+            
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                hasCancelledPlacement = true;
+            }
 
             if (Input.GetMouseButton(0))
             {
-                if(currentHitPos != hitPos)
-                {
-                    currentHitPos = hitPos;
+                //isCastRay = true;
 
-                    ObjectHolderState(true);
-                    objectPlaceHolder.position = currentHitPos;
-                }
-                else
+                if (Input.GetKeyDown(KeyCode.E))
                 {
-                    ObjectHolderState(true);
-                    objectPlaceHolder.position = currentHitPos;
+                    if (hasCancelledPlacement)
+                    {
+                        hasCancelledPlacement = false;
+                        PreveiwObjectState(hasCancelledPlacement);
+                        Debug.Log("isCastRay : " + hasCancelledPlacement);
+                    }
+                }
+
+                if(hasCancelledPlacement)
+                {
+                    if (currentHitPos != hitPos)
+                    {
+                        currentHitPos = hitPos;
+                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos);
+                    }
+                    else
+                    {
+                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos);
+                    }
                 }
             }
-            else if(Input.GetMouseButtonUp(0))
+            
+            if(Input.GetMouseButtonUp(0))
             {
-                ObjectHolderState(false);
-                PlaceObject(objectToPlace, hitPos, rotation);
+                if (hasCancelledPlacement == false) return;
+
+                PreveiwObjectState(false);
+                Vector3 direction = mainCameraPos - objectPlaceHolder.position;
+                direction.y = 0;
+                PlaceObject(objectToPlace, hitPos, Quaternion.Euler(0,0,0));
+
             }
         }
     }
 
     void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation)
     {
-        Instantiate(objectToPlace, position, rotation);
+        Instantiate(wall, position, rotation);
     }
 
-    void ObjectHolderState(bool isActive)
+    void PreveiwObjectState(bool isActive)
     {
         objectPlaceHolder.gameObject.SetActive(isActive);
+    }
+
+    void PreviewObjectSetup(Vector3 position, Transform Object, Vector3 cameraPos)
+    {
+        PreveiwObjectState(true);
+        Object.position = position;
+        Vector3 direction = cameraPos - Object.position;
+        direction.y = 0;
+        Object.rotation = Quaternion.Euler(0,0,0);
     }
 }
