@@ -9,7 +9,7 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField, Range(5, 30)] private float maxObjectPlacementDistance = 10;
     [SerializeField] private Transform objectToPlace;
     [SerializeField] private Transform objectPlaceHolder;
-    [SerializeField] private PlaceableObjectData[] objectPool;
+    [SerializeField] private PlaceableObjectData objectPool;
     [SerializeField] private Vector3 horizontalRotationOffset = new Vector3(0, 30, 0);
     [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
 
@@ -25,8 +25,8 @@ public class ObjectPlacer : MonoBehaviour
     {
         mainCamera = Camera.main;
 
-        wall = objectPool[0].objectPrefab;
-        wallPreveiew = objectPool[0].objectPreview;
+        wall = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPrefab;
+        wallPreveiew = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPreview;
     }
 
     private void Update()
@@ -124,7 +124,7 @@ public class ObjectPlacer : MonoBehaviour
 
     void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation)
     {
-        Instantiate(objectToPlace, position + new Vector3(0, halfHeight, 0), rotation);
+        Instantiate(wall, position + new Vector3(0, halfHeight, 0), rotation);
     }
 
     void PreveiwObjectState(bool isActive)
