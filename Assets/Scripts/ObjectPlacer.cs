@@ -10,9 +10,11 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Transform objectToPlace;
     [SerializeField] private Transform objectPlaceHolder;
     [SerializeField] private PlaceableObjectData[] objectPool;
+    [SerializeField] private Vector3 rotationOffset = new Vector3(0, 30, 0);
 
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
+    private Vector3 previewRotation = Vector3.zero;
 
     Transform wall;
     Transform wallPreveiew;
@@ -51,8 +53,6 @@ public class ObjectPlacer : MonoBehaviour
 
             //Debug.DrawRay(mainCameraPos, hitPos);
 
-            
-
             if (Input.GetMouseButtonDown(0))
             {
                 hasCancelledPlacement = true;
@@ -72,16 +72,25 @@ public class ObjectPlacer : MonoBehaviour
                     }
                 }
 
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    previewRotation = previewRotation + rotationOffset;
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    previewRotation = previewRotation - rotationOffset;
+                }
+
                 if(hasCancelledPlacement)
                 {
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos);
+                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos);
+                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }
@@ -93,7 +102,7 @@ public class ObjectPlacer : MonoBehaviour
                 PreveiwObjectState(false);
                 Vector3 direction = mainCameraPos - objectPlaceHolder.position;
                 direction.y = 0;
-                PlaceObject(objectToPlace, hitPos, Quaternion.Euler(0,0,0));
+                PlaceObject(objectToPlace, hitPos, Quaternion.Euler(previewRotation));
 
             }
         }
@@ -109,12 +118,12 @@ public class ObjectPlacer : MonoBehaviour
         objectPlaceHolder.gameObject.SetActive(isActive);
     }
 
-    void PreviewObjectSetup(Vector3 position, Transform Object, Vector3 cameraPos)
+    void PreviewObjectSetup(Vector3 position, Transform Object, Vector3 cameraPos, Vector3 rotation)
     {
         PreveiwObjectState(true);
         Object.position = position;
         Vector3 direction = cameraPos - Object.position;
         direction.y = 0;
-        Object.rotation = Quaternion.Euler(0,0,0);
+        Object.rotation = Quaternion.Euler(rotation);
     }
 }
