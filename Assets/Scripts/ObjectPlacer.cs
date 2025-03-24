@@ -10,7 +10,8 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Transform objectToPlace;
     [SerializeField] private Transform objectPlaceHolder;
     [SerializeField] private PlaceableObjectData[] objectPool;
-    [SerializeField] private Vector3 rotationOffset = new Vector3(0, 30, 0);
+    [SerializeField] private Vector3 horizontalRotationOffset = new Vector3(0, 30, 0);
+    [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
 
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
@@ -18,6 +19,7 @@ public class ObjectPlacer : MonoBehaviour
 
     Transform wall;
     Transform wallPreveiew;
+    float halfHeight;
 
     private void Start()
     {
@@ -74,23 +76,35 @@ public class ObjectPlacer : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
-                    previewRotation = previewRotation + rotationOffset;
+                    previewRotation = previewRotation + horizontalRotationOffset;
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha2))
                 {
-                    previewRotation = previewRotation - rotationOffset;
+                    previewRotation = previewRotation - horizontalRotationOffset;
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    previewRotation = previewRotation + verticalRotationOffset;
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    previewRotation = previewRotation - verticalRotationOffset;
                 }
 
-                if(hasCancelledPlacement)
+                MeshRenderer meshRenderer = objectPlaceHolder.GetComponentInChildren<MeshRenderer>();
+                float height = meshRenderer.bounds.size.y;
+                halfHeight = height / 2;
+
+                if (hasCancelledPlacement)
                 {
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(currentHitPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        PreviewObjectSetup(currentHitPos, objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(currentHitPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }
@@ -110,7 +124,7 @@ public class ObjectPlacer : MonoBehaviour
 
     void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation)
     {
-        Instantiate(wall, position, rotation);
+        Instantiate(objectToPlace, position + new Vector3(0, halfHeight, 0), rotation);
     }
 
     void PreveiwObjectState(bool isActive)
