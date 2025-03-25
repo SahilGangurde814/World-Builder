@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private PlaceableObjectData objectPool;
     [SerializeField] private Vector3 horizontalRotationOffset = new Vector3(0, 30, 0);
     [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
+    [SerializeField] private Grid grid;
+    [SerializeField] private Transform rayIndicator;
 
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
@@ -45,6 +48,7 @@ public class ObjectPlacer : MonoBehaviour
         Vector3 hitPos;
         Vector3 hitNorm;
         Vector3 currentHitPos = Vector3.zero;
+        Vector3 gridCellToWorldPos;
 
         bool isRayHitSurface = Physics.Raycast(ray, out hitInfo, maxObjectPlacementDistance, layerToPlaceObjects);
 
@@ -52,6 +56,9 @@ public class ObjectPlacer : MonoBehaviour
         {
             hitPos = hitInfo.point;
             hitNorm = hitInfo.normal;
+
+
+            gridCellToWorldPos = GridToWorldPos(hitPos);
 
             //Debug.DrawRay(mainCameraPos, hitPos);
 
@@ -64,14 +71,11 @@ public class ObjectPlacer : MonoBehaviour
             {
                 //isCastRay = true;
 
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.E) && hasCancelledPlacement)
                 {
-                    if (hasCancelledPlacement)
-                    {
-                        hasCancelledPlacement = false;
-                        PreveiwObjectState(hasCancelledPlacement);
-                        Debug.Log("isCastRay : " + hasCancelledPlacement);
-                    }
+                    hasCancelledPlacement = false;
+                    PreveiwObjectState(hasCancelledPlacement);
+                    Debug.Log("isCastRay : " + hasCancelledPlacement);
                 }
 
                 if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -95,16 +99,17 @@ public class ObjectPlacer : MonoBehaviour
                 float height = meshRenderer.bounds.size.y;
                 halfHeight = height / 2;
 
+
                 if (hasCancelledPlacement)
                 {
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        PreviewObjectSetup(currentHitPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        PreviewObjectSetup(currentHitPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }
@@ -116,9 +121,13 @@ public class ObjectPlacer : MonoBehaviour
                 PreveiwObjectState(false);
                 Vector3 direction = mainCameraPos - objectPlaceHolder.position;
                 direction.y = 0;
-                PlaceObject(objectToPlace, hitPos, Quaternion.Euler(previewRotation));
+                PlaceObject(objectToPlace, gridCellToWorldPos, Quaternion.Euler(previewRotation));
 
             }
+        }
+        else
+        {
+            rayIndicator.gameObject.SetActive(false);
         }
     }
 
@@ -139,5 +148,15 @@ public class ObjectPlacer : MonoBehaviour
         Vector3 direction = cameraPos - Object.position;
         direction.y = 0;
         Object.rotation = Quaternion.Euler(rotation);
+    }
+
+    Vector3 GridToWorldPos(Vector3 hitPos)
+    {
+        Vector3Int cellPos = grid.WorldToCell(hitPos);
+        rayIndicator.gameObject.SetActive(true);
+        rayIndicator.transform.position = grid.CellToWorld(cellPos);
+        Vector3 gridToWorldPos = grid.CellToWorld(cellPos);
+
+        return gridToWorldPos;
     }
 }
