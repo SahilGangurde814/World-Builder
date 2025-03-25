@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -11,6 +12,11 @@ public class PlaceableObjectData : ScriptableObject
     public PlaceablePrefabs CurrentPrefab(PrefabTypes type)
     {
         return placeablePrefabs.Find((x) => x.PrefabType == type);
+    }
+
+    public PlaceablePrefabs GetObjectByIndex(int index) 
+    {
+        return placeablePrefabs[index];
     }
 }
 

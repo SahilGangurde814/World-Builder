@@ -19,25 +19,26 @@ public class ObjectPlacer : MonoBehaviour
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
     private Vector3 previewRotation = Vector3.zero;
-
-    Transform wall;
-    Transform wallPreveiew;
-    float halfHeight;
+    private int selectedObjectIndex;
+    private Transform placeableObject;
+    private Transform placeableObjectPreview;
+    private float halfHeight;
 
     private void Start()
     {
         mainCamera = Camera.main;
 
-        wall = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPrefab;
-        wallPreveiew = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPreview;
+        placeableObject = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPrefab;
+        placeableObjectPreview = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPreview;
     }
 
     private void Update()
     {
-        SurfaceNormalChecker();
+        SetPlaceableObject();
+        PlaceObject();
     }
 
-    void SurfaceNormalChecker()
+    void PlaceObject()
     {
         Vector3 mainCameraPos = mainCamera.transform.position;
         Vector3 mainCameraForward = mainCamera.transform.forward;
@@ -95,9 +96,10 @@ public class ObjectPlacer : MonoBehaviour
                     previewRotation = previewRotation - verticalRotationOffset;
                 }
 
-                MeshRenderer meshRenderer = objectPlaceHolder.GetComponentInChildren<MeshRenderer>();
-                float height = meshRenderer.bounds.size.y;
-                halfHeight = height / 2;
+                //// if object's pivot is in center use this
+                //MeshRenderer meshRenderer = objectPlaceHolder.GetComponentInChildren<MeshRenderer>();
+                //float height = meshRenderer.bounds.size.y;
+                //halfHeight = height / 2;
 
 
                 if (hasCancelledPlacement)
@@ -105,11 +107,11 @@ public class ObjectPlacer : MonoBehaviour
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(gridCellToWorldPos /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0, halfHeight, 0), objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(gridCellToWorldPos /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }
@@ -133,7 +135,7 @@ public class ObjectPlacer : MonoBehaviour
 
     void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation)
     {
-        Instantiate(wall, position + new Vector3(0, halfHeight, 0), rotation);
+        Instantiate(placeableObject, position /*+ new Vector3(0, halfHeight, 0)*/, rotation);
     }
 
     void PreveiwObjectState(bool isActive)
@@ -158,5 +160,27 @@ public class ObjectPlacer : MonoBehaviour
         Vector3 gridToWorldPos = grid.CellToWorld(cellPos);
 
         return gridToWorldPos;
+    }
+
+    Transform SetPlaceableObject()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        int listCount = objectPool.placeablePrefabs.Count;
+        Transform selectedObject = placeableObject;
+
+        if (scroll != 0)
+        {
+            if(scroll < 0)
+            {
+                selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
+                selectedObject = objectPool.placeablePrefabs[selectedObjectIndex].objectPrefab;
+            }
+            else
+            {
+                selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
+                selectedObject = objectPool.placeablePrefabs[selectedObjectIndex].objectPrefab;
+            }
+        }
+        return placeableObject = selectedObject;
     }
 }
