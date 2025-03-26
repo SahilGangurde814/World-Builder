@@ -15,7 +15,9 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
     [SerializeField] private Grid grid;
     [SerializeField] private Transform rayIndicator;
-
+    [SerializeField] private Transform placedObjectParent;
+    [SerializeField] private Transform preveiwObjectsParent;
+ 
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
     private Vector3 previewRotation = Vector3.zero;
@@ -28,8 +30,8 @@ public class ObjectPlacer : MonoBehaviour
     {
         mainCamera = Camera.main;
 
-        placeableObject = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPrefab;
-        placeableObjectPreview = objectPool.CurrentPrefab(PrefabTypes.Wall).objectPreview;
+        placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
+        placeableObjectPreview = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPreview;
     }
 
     private void Update()
@@ -76,7 +78,6 @@ public class ObjectPlacer : MonoBehaviour
                 {
                     hasCancelledPlacement = false;
                     PreveiwObjectState(hasCancelledPlacement);
-                    Debug.Log("isCastRay : " + hasCancelledPlacement);
                 }
 
                 if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -123,19 +124,20 @@ public class ObjectPlacer : MonoBehaviour
                 PreveiwObjectState(false);
                 Vector3 direction = mainCameraPos - objectPlaceHolder.position;
                 direction.y = 0;
-                PlaceObject(objectToPlace, gridCellToWorldPos, Quaternion.Euler(previewRotation));
+                PlaceObject(placeableObject, gridCellToWorldPos, Quaternion.Euler(previewRotation), placedObjectParent);
 
             }
         }
         else
         {
             rayIndicator.gameObject.SetActive(false);
+            PreveiwObjectState(false);
         }
     }
 
-    void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation)
+    void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation, Transform parent)
     {
-        Instantiate(placeableObject, position /*+ new Vector3(0, halfHeight, 0)*/, rotation);
+        Instantiate(objectHolder, position /*+ new Vector3(0, halfHeight, 0)*/, rotation, parent);
     }
 
     void PreveiwObjectState(bool isActive)
@@ -162,25 +164,37 @@ public class ObjectPlacer : MonoBehaviour
         return gridToWorldPos;
     }
 
-    Transform SetPlaceableObject()
+    void SetPlaceableObject()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         int listCount = objectPool.placeablePrefabs.Count;
         Transform selectedObject = placeableObject;
+        Transform previewObject = objectPlaceHolder;
 
         if (scroll != 0)
         {
-            if(scroll < 0)
+            if(scroll > 0)
             {
                 selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
-                selectedObject = objectPool.placeablePrefabs[selectedObjectIndex].objectPrefab;
+                PrefabTypes prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
+                PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
+                
+                selectedObject = placeablePrefabs.objectPrefab;
+                previewObject = placeablePrefabs.objectPreview;
+
             }
             else
             {
                 selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
-                selectedObject = objectPool.placeablePrefabs[selectedObjectIndex].objectPrefab;
+                PrefabTypes prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
+                PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
+
+                selectedObject = placeablePrefabs.objectPrefab;
+                previewObject = placeablePrefabs.objectPreview;
             }
         }
-        return placeableObject = selectedObject;
+
+        placeableObject = selectedObject;
+        objectPlaceHolder = previewObject;
     }
 }

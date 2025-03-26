@@ -9,7 +9,7 @@ public class PlaceableObjectData : ScriptableObject
 {
     public List<PlaceablePrefabs> placeablePrefabs;
 
-    public PlaceablePrefabs CurrentPrefab(PrefabTypes type)
+    public PlaceablePrefabs GetCurrentPrefab(PrefabTypes type)
     {
         return placeablePrefabs.Find((x) => x.PrefabType == type);
     }
@@ -31,5 +31,6 @@ public class PlaceablePrefabs
 public enum PrefabTypes
 {
     Wall,
-    Window
+    Window,
+    Door1
 }

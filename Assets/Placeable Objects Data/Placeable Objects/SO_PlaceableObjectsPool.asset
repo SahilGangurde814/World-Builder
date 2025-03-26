@@ -19,3 +19,6 @@ MonoBehaviour:
   - PrefabType: 1
     objectPrefab: {fileID: 4895275589672113156, guid: 9f4df6736f79ec54dae907e24ff894e9, type: 3}
     objectPreview: {fileID: 2257324354114127812, guid: c4a31e921120d744cabf523964a0dd21, type: 3}
+  - PrefabType: 2
+    objectPrefab: {fileID: 691308444018255202, guid: c9805e3478ea7ac4ca0f69e851880892, type: 3}
+    objectPreview: {fileID: 2257324354114127812, guid: c4a31e921120d744cabf523964a0dd21, type: 3}
