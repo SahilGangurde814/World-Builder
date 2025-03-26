@@ -25,7 +25,7 @@ public class PlaceablePrefabs
 {
     public PrefabTypes PrefabType;
     public Transform objectPrefab;
-    public Transform objectPreview;
+    //public Transform objectPreview;
 }
 [Serializable]
 public enum PrefabTypes

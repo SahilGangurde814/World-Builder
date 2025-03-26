@@ -593,7 +593,13 @@ MonoBehaviour:
   grid: {fileID: 1628742179}
   rayIndicator: {fileID: 1505687126}
   placedObjectParent: {fileID: 214028391}
-  preveiwObjectsParent: {fileID: 0}
+  preveiwObjectsData:
+  - PrefabType: 0
+    objectPrefab: {fileID: 2257324354651585967}
+  - PrefabType: 1
+    objectPrefab: {fileID: 1309649644595416793}
+  - PrefabType: 2
+    objectPrefab: {fileID: 1126320805757305162}
 --- !u!4 &691876240
 Transform:
   m_ObjectHideFlags: 0
@@ -1312,6 +1318,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1733765457312735536, guid: c9805e3478ea7ac4ca0f69e851880892, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: eecb02e6d850ff44ea27b432fc80dcda, type: 2}
+    - target: {fileID: 8553744108610067094, guid: c9805e3478ea7ac4ca0f69e851880892, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: eecb02e6d850ff44ea27b432fc80dcda, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

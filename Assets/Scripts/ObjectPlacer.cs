@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private Transform rayIndicator;
     [SerializeField] private Transform placedObjectParent;
-    [SerializeField] private Transform preveiwObjectsParent;
+    [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
  
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
@@ -25,13 +26,15 @@ public class ObjectPlacer : MonoBehaviour
     private Transform placeableObject;
     private Transform placeableObjectPreview;
     private float halfHeight;
+    private Dictionary<Vector3Int, GameObject> placeObjectsData = new();
+    private PrefabTypes currentSelectedObjectType = PrefabTypes.Wall;
 
     private void Start()
     {
         mainCamera = Camera.main;
 
         placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
-        placeableObjectPreview = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPreview;
+        //placeableObjectPreview = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPreview;
     }
 
     private void Update()
@@ -124,7 +127,15 @@ public class ObjectPlacer : MonoBehaviour
                 PreveiwObjectState(false);
                 Vector3 direction = mainCameraPos - objectPlaceHolder.position;
                 direction.y = 0;
-                PlaceObject(placeableObject, gridCellToWorldPos, Quaternion.Euler(previewRotation), placedObjectParent);
+                Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
+                if(!placeObjectsData.ContainsKey(cellPos))
+                {
+                    PlaceObject(placeableObject, gridCellToWorldPos, Quaternion.Euler(previewRotation), placedObjectParent);
+                }
+                else
+                {
+                    Debug.Log("Position occupied");
+                }
 
             }
         }
@@ -138,6 +149,8 @@ public class ObjectPlacer : MonoBehaviour
     void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation, Transform parent)
     {
         Instantiate(objectHolder, position /*+ new Vector3(0, halfHeight, 0)*/, rotation, parent);
+        Vector3Int cellPos = grid.WorldToCell(position);
+        placeObjectsData.Add(cellPos, objectHolder.gameObject);
     }
 
     void PreveiwObjectState(bool isActive)
@@ -170,31 +183,35 @@ public class ObjectPlacer : MonoBehaviour
         int listCount = objectPool.placeablePrefabs.Count;
         Transform selectedObject = placeableObject;
         Transform previewObject = objectPlaceHolder;
+        PrefabTypes prefabTypes = PrefabTypes.Wall;
 
         if (scroll != 0)
         {
             if(scroll > 0)
             {
                 selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
-                PrefabTypes prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
+                prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
                 PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
                 
                 selectedObject = placeablePrefabs.objectPrefab;
-                previewObject = placeablePrefabs.objectPreview;
+                //previewObject = placeablePrefabs.objectPreview;
+                objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
 
             }
             else
             {
                 selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
-                PrefabTypes prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
+                prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
                 PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
 
                 selectedObject = placeablePrefabs.objectPrefab;
-                previewObject = placeablePrefabs.objectPreview;
+                //previewObject = placeablePrefabs.objectPreview;
+                objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
             }
         }
 
         placeableObject = selectedObject;
-        objectPlaceHolder = previewObject;
+        //objectPlaceHolder = previewObject;
+        //Debug.Log("Object Holder : " + objectPlaceHolder.name);
     }
 }
