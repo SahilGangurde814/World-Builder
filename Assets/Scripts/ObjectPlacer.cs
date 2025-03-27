@@ -18,6 +18,8 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Transform rayIndicator;
     [SerializeField] private Transform placedObjectParent;
     [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
+    [SerializeField] private Material invalidPosMaterial;
+    [SerializeField] private Material validPosMaterial;
  
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
@@ -27,7 +29,7 @@ public class ObjectPlacer : MonoBehaviour
     private Transform placeableObjectPreview;
     private float halfHeight;
     private Dictionary<Vector3Int, GameObject> placeObjectsData = new();
-    private PrefabTypes currentSelectedObjectType = PrefabTypes.Wall;
+    //private PrefabTypes currentSelectedObjectType = PrefabTypes.Wall;
 
     private void Start()
     {
@@ -77,7 +79,7 @@ public class ObjectPlacer : MonoBehaviour
             {
                 //isCastRay = true;
 
-                if (Input.GetKeyDown(KeyCode.E) && hasCancelledPlacement)
+                if (Input.GetMouseButtonDown(1) && hasCancelledPlacement)
                 {
                     hasCancelledPlacement = false;
                     PreveiwObjectState(hasCancelledPlacement);
@@ -105,6 +107,23 @@ public class ObjectPlacer : MonoBehaviour
                 //float height = meshRenderer.bounds.size.y;
                 //halfHeight = height / 2;
 
+                Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
+                if (placeObjectsData.ContainsKey(cellPos))
+                {
+                    Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
+                    foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
+                    {
+                        materialHoldingObject.GetComponent<MeshRenderer>().material = invalidPosMaterial;
+                    }
+                }
+                else
+                {
+                    Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
+                    foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
+                    {
+                        materialHoldingObject.GetComponent<MeshRenderer>().material = validPosMaterial;
+                    }
+                }
 
                 if (hasCancelledPlacement)
                 {
@@ -112,6 +131,7 @@ public class ObjectPlacer : MonoBehaviour
                     {
                         currentHitPos = hitPos;
                         PreviewObjectSetup(gridCellToWorldPos /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+
                     }
                     else
                     {
@@ -189,6 +209,10 @@ public class ObjectPlacer : MonoBehaviour
         {
             if(scroll > 0)
             {
+                if (objectPlaceHolder.gameObject.activeSelf)
+                {
+                    PreveiwObjectState(false);
+                }
                 selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
                 prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
                 PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
@@ -200,6 +224,10 @@ public class ObjectPlacer : MonoBehaviour
             }
             else
             {
+                if (objectPlaceHolder.gameObject.activeSelf)
+                {
+                    PreveiwObjectState(false);
+                }
                 selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
                 prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
                 PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
