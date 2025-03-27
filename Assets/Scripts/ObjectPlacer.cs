@@ -8,19 +8,21 @@ public class ObjectPlacer : MonoBehaviour
 {
     [Header("Placement Attributes")]
     [SerializeField] private LayerMask layerToPlaceObjects = 6;
-    [SerializeField, Range(5, 30)] private float maxObjectPlacementDistance = 10;
     [SerializeField] private Transform objectToPlace;
     [SerializeField] private Transform objectPlaceHolder;
     [SerializeField] private PlaceableObjectData objectPool;
     [SerializeField] private Vector3 horizontalRotationOffset = new Vector3(0, 30, 0);
     [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
-    [SerializeField] private Grid grid;
     [SerializeField] private Transform rayIndicator;
     [SerializeField] private Transform placedObjectParent;
     [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
     [SerializeField] private Material invalidPosMaterial;
     [SerializeField] private Material validPosMaterial;
- 
+
+    public Grid grid;
+
+    [Range(5, 30)] 
+    public float maxObjectPlacementDistance = 10;
     private Camera mainCamera;
     private bool hasCancelledPlacement = true;
     private Vector3 previewRotation = Vector3.zero;
@@ -29,14 +31,12 @@ public class ObjectPlacer : MonoBehaviour
     private Transform placeableObjectPreview;
     private float halfHeight;
     private Dictionary<Vector3Int, GameObject> placeObjectsData = new();
-    //private PrefabTypes currentSelectedObjectType = PrefabTypes.Wall;
 
     private void Start()
     {
         mainCamera = Camera.main;
 
         placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
-        //placeableObjectPreview = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPreview;
     }
 
     private void Update()
@@ -123,7 +123,6 @@ public class ObjectPlacer : MonoBehaviour
                     {
                         currentHitPos = hitPos;
                         PreviewObjectSetup(gridCellToWorldPos /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
-
                     }
                     else
                     {
@@ -148,7 +147,6 @@ public class ObjectPlacer : MonoBehaviour
                 {
                     Debug.Log("Position occupied");
                 }
-
             }
         }
         else
@@ -205,8 +203,8 @@ public class ObjectPlacer : MonoBehaviour
                 {
                     PreveiwObjectState(false);
                 }
-                SetPreviewObject(listCount, prefabTypes, previewObject);
-
+                selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
+                selectedObject = SetPreviewObject(listCount, prefabTypes, previewObject);
             }
             else
             {
@@ -214,13 +212,12 @@ public class ObjectPlacer : MonoBehaviour
                 {
                     PreveiwObjectState(false);
                 }
-                SetPreviewObject(listCount, prefabTypes, selectedObject);
+                selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
+                selectedObject = SetPreviewObject(listCount, prefabTypes, selectedObject);
             }
         }
 
         placeableObject = selectedObject;
-        //objectPlaceHolder = previewObject;
-        //Debug.Log("Object Holder : " + objectPlaceHolder.name);
     }
 
     void PreviewMaterial(Material material)
@@ -234,14 +231,19 @@ public class ObjectPlacer : MonoBehaviour
 
     Transform SetPreviewObject(int listCount, PrefabTypes prefabTypes, Transform selectedObject)
     {
-        selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
         prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
         PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
-
         selectedObject = placeablePrefabs.objectPrefab;
-        //previewObject = placeablePrefabs.objectPreview;
         objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
 
         return selectedObject;
+    }
+
+    public void DestroyPlacedObject(Vector3Int key)
+    {
+        if(placeObjectsData.ContainsKey(key))
+        {
+            placeObjectsData.Remove(key);
+        }
     }
 }

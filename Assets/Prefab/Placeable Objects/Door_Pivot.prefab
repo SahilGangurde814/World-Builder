@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 691308444018255202}
-  m_Layer: 0
+  - component: {fileID: 8122892086875727977}
+  m_Layer: 7
   m_Name: Door_Pivot
-  m_TagString: Untagged
+  m_TagString: PlacedObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33,6 +34,27 @@ Transform:
   - {fileID: 7097231732861909169}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8122892086875727977
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151370458429655979}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3178655, y: 2.3768587, z: 2.0214312}
+  m_Center: {x: 0.024205118, y: 1.2186284, z: 0.996158}
 --- !u!1 &4342415127446610951
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,7 +66,7 @@ GameObject:
   - component: {fileID: 569951497338468240}
   - component: {fileID: 24370687253550981}
   - component: {fileID: 3938343138877631739}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +152,7 @@ GameObject:
   - component: {fileID: 4705116211243954774}
   - component: {fileID: 3428352038828872809}
   - component: {fileID: 1733765457312735536}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,7 +237,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7097231732861909169}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: door-rotate-round-c
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +271,7 @@ GameObject:
   - component: {fileID: 7421417815679492601}
   - component: {fileID: 5859736975390273116}
   - component: {fileID: 8553744108610067094}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: wall-doorway-round
   m_TagString: Untagged
   m_Icon: {fileID: 0}

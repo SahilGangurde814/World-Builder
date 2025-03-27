@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6779381709585934543}
   - component: {fileID: 5936661122326302142}
   - component: {fileID: 3701613984278454522}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,9 +95,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1200833713070530827}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WallPivot
-  m_TagString: Untagged
+  m_TagString: PlacedObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
