@@ -110,19 +110,11 @@ public class ObjectPlacer : MonoBehaviour
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 if (placeObjectsData.ContainsKey(cellPos))
                 {
-                    Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
-                    foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
-                    {
-                        materialHoldingObject.GetComponent<MeshRenderer>().material = invalidPosMaterial;
-                    }
+                    PreviewMaterial(invalidPosMaterial);
                 }
                 else
                 {
-                    Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
-                    foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
-                    {
-                        materialHoldingObject.GetComponent<MeshRenderer>().material = validPosMaterial;
-                    }
+                    PreviewMaterial(validPosMaterial);
                 }
 
                 if (hasCancelledPlacement)
@@ -145,8 +137,8 @@ public class ObjectPlacer : MonoBehaviour
                 if (hasCancelledPlacement == false) return;
 
                 PreveiwObjectState(false);
-                Vector3 direction = mainCameraPos - objectPlaceHolder.position;
-                direction.y = 0;
+                //Vector3 direction = mainCameraPos - objectPlaceHolder.position;
+                //direction.y = 0;    for object to not rotate on x axis
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 if(!placeObjectsData.ContainsKey(cellPos))
                 {
@@ -213,13 +205,7 @@ public class ObjectPlacer : MonoBehaviour
                 {
                     PreveiwObjectState(false);
                 }
-                selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
-                prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
-                PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
-                
-                selectedObject = placeablePrefabs.objectPrefab;
-                //previewObject = placeablePrefabs.objectPreview;
-                objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
+                SetPreviewObject(listCount, prefabTypes, previewObject);
 
             }
             else
@@ -228,18 +214,34 @@ public class ObjectPlacer : MonoBehaviour
                 {
                     PreveiwObjectState(false);
                 }
-                selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
-                prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
-                PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
-
-                selectedObject = placeablePrefabs.objectPrefab;
-                //previewObject = placeablePrefabs.objectPreview;
-                objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
+                SetPreviewObject(listCount, prefabTypes, selectedObject);
             }
         }
 
         placeableObject = selectedObject;
         //objectPlaceHolder = previewObject;
         //Debug.Log("Object Holder : " + objectPlaceHolder.name);
+    }
+
+    void PreviewMaterial(Material material)
+    {
+        Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
+        foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
+        {
+            materialHoldingObject.GetComponent<MeshRenderer>().material = material;
+        }
+    }
+
+    Transform SetPreviewObject(int listCount, PrefabTypes prefabTypes, Transform selectedObject)
+    {
+        selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
+        prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
+        PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
+
+        selectedObject = placeablePrefabs.objectPrefab;
+        //previewObject = placeablePrefabs.objectPreview;
+        objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
+
+        return selectedObject;
     }
 }
