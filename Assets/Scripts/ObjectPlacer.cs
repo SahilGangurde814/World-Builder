@@ -180,8 +180,8 @@ public class ObjectPlacer : MonoBehaviour
     Vector3 GridToWorldPos(Vector3 hitPos)
     {
         Vector3Int cellPos = grid.WorldToCell(hitPos);
-        rayIndicator.gameObject.SetActive(true);
-        rayIndicator.transform.position = grid.CellToWorld(cellPos);
+        //rayIndicator.gameObject.SetActive(true);
+        //rayIndicator.transform.position = grid.CellToWorld(cellPos);
         Vector3 gridToWorldPos = grid.CellToWorld(cellPos);
 
         return gridToWorldPos;

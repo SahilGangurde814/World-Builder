@@ -4,6 +4,7 @@ public class DestroyPlacedObject : MonoBehaviour
 {
     [SerializeField] private ObjectPlacer objectPlacer;
     [SerializeField] private LayerMask placedObjectLayer;
+    [SerializeField] private Material defaultMaterial;
 
     private Camera _camera;
     private float maxDestroyDis;
@@ -25,12 +26,16 @@ public class DestroyPlacedObject : MonoBehaviour
 
             if (isHit)
             {
+                if(selectedObject != hit.transform && selectedObject != null)
+                {
+                    selectedObject.GetComponentInChildren<MeshRenderer>().material = defaultMaterial;
+                }
                 selectedObject = hit.transform;
                 hit.transform.GetComponentInChildren<MeshRenderer>().material = objectPlacer.invalidPosMaterial;
             }
             else if(!isHit && selectedObject != null)
             {
-                selectedObject.GetComponentInChildren<MeshRenderer>().material = objectPlacer.validPosMaterial;
+                selectedObject.GetComponentInChildren<MeshRenderer>().material = defaultMaterial;  
             }
         }
 
