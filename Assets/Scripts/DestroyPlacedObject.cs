@@ -7,6 +7,7 @@ public class DestroyPlacedObject : MonoBehaviour
 
     private Camera _camera;
     private float maxDestroyDis;
+    private Transform selectedObject;
 
     private void Start()
     {
@@ -16,18 +17,33 @@ public class DestroyPlacedObject : MonoBehaviour
 
     private void Update()
     {
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
         if (Input.GetKey(KeyCode.B))
         {
-            Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
             bool isHit = Physics.Raycast(ray, out RaycastHit hit, maxDestroyDis, placedObjectLayer);
 
-            Debug.Log("Hit Object name : " + isHit);
             if (isHit)
+            {
+                selectedObject = hit.transform;
+                hit.transform.GetComponentInChildren<MeshRenderer>().material = objectPlacer.invalidPosMaterial;
+            }
+            else if(!isHit && selectedObject != null)
+            {
+                selectedObject.GetComponentInChildren<MeshRenderer>().material = objectPlacer.validPosMaterial;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.B))
+        { 
+            bool isHit = Physics.Raycast(ray, out RaycastHit hit, maxDestroyDis, placedObjectLayer);
+
+            if (isHit && selectedObject == hit.transform) 
             {
                 Vector3 placedObjectPos = hit.transform.position;
                 Vector3Int cellPos = objectPlacer.grid.WorldToCell(placedObjectPos);
                 objectPlacer.DestroyPlacedObject(cellPos);
-                Destroy(hit.transform.gameObject);
+                Destroy(selectedObject.gameObject);
             }
         }
     }

@@ -16,8 +16,8 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Transform rayIndicator;
     [SerializeField] private Transform placedObjectParent;
     [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
-    [SerializeField] private Material invalidPosMaterial;
-    [SerializeField] private Material validPosMaterial;
+    public Material invalidPosMaterial;
+    public Material validPosMaterial;
 
     public Grid grid;
 
