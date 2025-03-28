@@ -122,11 +122,11 @@ public class ObjectPlacer : MonoBehaviour
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        PreviewObjectSetup(gridCellToWorldPos /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        PreviewObjectSetup(gridCellToWorldPos /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }

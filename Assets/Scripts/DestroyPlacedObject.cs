@@ -21,9 +21,9 @@ public class DestroyPlacedObject : MonoBehaviour
             Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
             bool isHit = Physics.Raycast(ray, out RaycastHit hit, maxDestroyDis, placedObjectLayer);
 
+            Debug.Log("Hit Object name : " + isHit);
             if (isHit)
             {
-                Debug.Log("Hit Object name : " + hit.transform.gameObject.name);
                 Vector3 placedObjectPos = hit.transform.position;
                 Vector3Int cellPos = objectPlacer.grid.WorldToCell(placedObjectPos);
                 objectPlacer.DestroyPlacedObject(cellPos);
