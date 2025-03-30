@@ -17,6 +17,6 @@ public class Interactable : MonoBehaviour
 
     public void InteractableUiState(bool isActive)
     {
-        interactabelUIObject.gameObject.SetActive(isActive);
+        interactabelUIObject?.gameObject.SetActive(isActive);
     }
 }

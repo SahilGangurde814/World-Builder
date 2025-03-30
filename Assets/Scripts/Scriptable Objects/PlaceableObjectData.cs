@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "NewPlaceableObject", menuName = "Placement/Placeable Object") ]
 public class PlaceableObjectData : ScriptableObject
@@ -25,7 +26,7 @@ public class PlaceablePrefabs
 {
     public PrefabTypes PrefabType;
     public Transform objectPrefab;
-    //public Transform objectPreview;
+    public Sprite objectPreviewImages;
 }
 [Serializable]
 public enum PrefabTypes
