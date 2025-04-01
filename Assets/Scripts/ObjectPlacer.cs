@@ -30,7 +30,7 @@ public class ObjectPlacer : MonoBehaviour
     private Transform placeableObject;
     private Transform placeableObjectPreview;
     private float halfHeight;
-    private Dictionary<Vector3Int, GameObject> placeObjectsData = new();
+    private Dictionary<Vector3, GameObject> placeObjectsData = new();
 
     private void Start()
     {
@@ -108,7 +108,9 @@ public class ObjectPlacer : MonoBehaviour
                 //halfHeight = height / 2;
 
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
-                if (placeObjectsData.ContainsKey(cellPos))
+                Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
+
+                if (placeObjectsData.ContainsKey(cellCenterWorld))
                 {
                     PreviewMaterial(invalidPosMaterial);
                 }
@@ -119,14 +121,17 @@ public class ObjectPlacer : MonoBehaviour
 
                 if (hasCancelledPlacement)
                 {
+
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+                        Debug.Log("Preview Pos :" + cellCenterWorld);
+                        PreviewObjectSetup(cellCenterWorld + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        PreviewObjectSetup(gridCellToWorldPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+                        Debug.Log("Preview Pos :" + cellCenterWorld);
+                        PreviewObjectSetup(cellCenterWorld + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }
@@ -139,9 +144,12 @@ public class ObjectPlacer : MonoBehaviour
                 //Vector3 direction = mainCameraPos - objectPlaceHolder.position;
                 //direction.y = 0;    for object to not rotate on x axis
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
-                if(!placeObjectsData.ContainsKey(cellPos))
+                Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
+                if(!placeObjectsData.ContainsKey(cellCenterWorld))
                 {
-                    PlaceObject(placeableObject, gridCellToWorldPos, Quaternion.Euler(previewRotation), placedObjectParent);
+                    PlaceObject(placeableObject, cellCenterWorld, Quaternion.Euler(previewRotation), placedObjectParent);
+                    Debug.Log("Placement Pos : " + cellCenterWorld);
+                    Debug.Log("Cell Pos : " + cellPos);
                 }
                 else
                 {
@@ -160,7 +168,8 @@ public class ObjectPlacer : MonoBehaviour
     {
         Instantiate(objectHolder, position /*+ new Vector3(0, halfHeight, 0)*/, rotation, parent);
         Vector3Int cellPos = grid.WorldToCell(position);
-        placeObjectsData.Add(cellPos, objectHolder.gameObject);
+        Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
+        placeObjectsData.Add(cellCenterWorld, objectHolder.gameObject);
     }
 
     void PreveiwObjectState(bool isActive)
@@ -171,7 +180,8 @@ public class ObjectPlacer : MonoBehaviour
     void PreviewObjectSetup(Vector3 position, Transform Object, Vector3 cameraPos, Vector3 rotation)
     {
         PreveiwObjectState(true);
-        Object.position = position;
+        Object.position = Vector3.Lerp(Object.position, position, 0.2f);
+        //Object.position = position;
         Vector3 direction = cameraPos - Object.position;
         direction.y = 0;
         Object.rotation = Quaternion.Euler(rotation);
