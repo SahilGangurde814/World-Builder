@@ -5,6 +5,7 @@ public class DestroyPlacedObject : MonoBehaviour
     [SerializeField] private ObjectPlacer objectPlacer;
     [SerializeField] private LayerMask placedObjectLayer;
     [SerializeField] private Material defaultMaterial;
+    [SerializeField] private GridData gridData;
 
     private Camera _camera;
     private float maxDestroyDis;
@@ -47,7 +48,7 @@ public class DestroyPlacedObject : MonoBehaviour
             {
                 Vector3 placedObjectPos = hit.transform.position;
                 Vector3Int cellPos = objectPlacer.grid.WorldToCell(placedObjectPos);
-                objectPlacer.DestroyPlacedObject(cellPos);
+                gridData.DestroyPlacedObjectData(cellPos);
                 Destroy(selectedObject.gameObject);
             }
         }

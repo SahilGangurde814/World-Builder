@@ -16,6 +16,9 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Transform rayIndicator;
     [SerializeField] private Transform placedObjectParent;
     [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
+
+    [SerializeField] private GridData gridData;
+
     public Material invalidPosMaterial;
     public Material validPosMaterial;
 
@@ -30,7 +33,6 @@ public class ObjectPlacer : MonoBehaviour
     private Transform placeableObject;
     private Transform placeableObjectPreview;
     private float halfHeight;
-    private Dictionary<Vector3, GameObject> placeObjectsData = new();
 
     private void Start()
     {
@@ -110,7 +112,7 @@ public class ObjectPlacer : MonoBehaviour
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
 
-                if (placeObjectsData.ContainsKey(cellCenterWorld))
+                if (gridData.ContainsKey(cellCenterWorld))
                 {
                     PreviewMaterial(invalidPosMaterial);
                 }
@@ -145,7 +147,7 @@ public class ObjectPlacer : MonoBehaviour
                 //direction.y = 0;    for object to not rotate on x axis
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-                if(!placeObjectsData.ContainsKey(cellCenterWorld))
+                if(!gridData.ContainsKey(cellCenterWorld))
                 {
                     PlaceObject(placeableObject, cellCenterWorld, Quaternion.Euler(previewRotation), placedObjectParent);
                     Debug.Log("Placement Pos : " + cellCenterWorld);
@@ -169,7 +171,7 @@ public class ObjectPlacer : MonoBehaviour
         Instantiate(objectHolder, position /*+ new Vector3(0, halfHeight, 0)*/, rotation, parent);
         Vector3Int cellPos = grid.WorldToCell(position);
         Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-        placeObjectsData.Add(cellCenterWorld, objectHolder.gameObject);
+        gridData.AddData(cellCenterWorld, objectHolder.gameObject);
     }
 
     void PreveiwObjectState(bool isActive)
@@ -249,11 +251,11 @@ public class ObjectPlacer : MonoBehaviour
         return selectedObject;
     }
 
-    public void DestroyPlacedObject(Vector3Int key)
-    {
-        if(placeObjectsData.ContainsKey(key))
-        {
-            placeObjectsData.Remove(key);
-        }
-    }
+    //public void DestroyPlacedObject(Vector3Int key)
+    //{
+    //    if(placeObjectsData.ContainsKey(key))
+    //    {
+    //        placeObjectsData.Remove(key);
+    //    }
+    //}
 }
