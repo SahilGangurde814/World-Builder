@@ -33,12 +33,14 @@ public class ObjectPlacer : MonoBehaviour
     private Transform placeableObject;
     private Transform placeableObjectPreview;
     private float halfHeight;
+    private PlaceablePrefabs currentSelectedObjectData;
 
     private void Start()
     {
         mainCamera = Camera.main;
 
         placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
+        currentSelectedObjectData = objectPool.GetCurrentPrefab(PrefabTypes.Wall);
     }
 
     private void Update()
@@ -112,7 +114,7 @@ public class ObjectPlacer : MonoBehaviour
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
 
-                if (gridData.ContainsKey(cellCenterWorld))
+                if (!gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size))
                 {
                     PreviewMaterial(invalidPosMaterial);
                 }
@@ -127,13 +129,11 @@ public class ObjectPlacer : MonoBehaviour
                     if (currentHitPos != hitPos)
                     {
                         currentHitPos = hitPos;
-                        Debug.Log("Preview Pos :" + cellCenterWorld);
-                        PreviewObjectSetup(cellCenterWorld + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(cellPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                     else
                     {
-                        Debug.Log("Preview Pos :" + cellCenterWorld);
-                        PreviewObjectSetup(cellCenterWorld + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
+                        PreviewObjectSetup(cellPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, mainCameraPos, previewRotation);
                     }
                 }
             }
@@ -147,11 +147,9 @@ public class ObjectPlacer : MonoBehaviour
                 //direction.y = 0;    for object to not rotate on x axis
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-                if(!gridData.ContainsKey(cellCenterWorld))
+                if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size))
                 {
-                    PlaceObject(placeableObject, cellCenterWorld, Quaternion.Euler(previewRotation), placedObjectParent);
-                    Debug.Log("Placement Pos : " + cellCenterWorld);
-                    Debug.Log("Cell Pos : " + cellPos);
+                    PlaceObject(placeableObject, cellPos, Quaternion.Euler(previewRotation), placedObjectParent);
                 }
                 else
                 {
@@ -171,7 +169,7 @@ public class ObjectPlacer : MonoBehaviour
         Instantiate(objectHolder, position /*+ new Vector3(0, halfHeight, 0)*/, rotation, parent);
         Vector3Int cellPos = grid.WorldToCell(position);
         Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-        gridData.AddData(cellCenterWorld, objectHolder.gameObject);
+        gridData.AddData(cellPos, objectHolder.gameObject, currentSelectedObjectData.size);
     }
 
     void PreveiwObjectState(bool isActive)
@@ -247,6 +245,7 @@ public class ObjectPlacer : MonoBehaviour
         PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
         selectedObject = placeablePrefabs.objectPrefab;
         objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
+        currentSelectedObjectData = placeablePrefabs;
 
         return selectedObject;
     }

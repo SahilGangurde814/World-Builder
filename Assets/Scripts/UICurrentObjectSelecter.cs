@@ -100,7 +100,6 @@ public class UICurrentObjectSelecter : MonoBehaviour
         int objectPoolCount = objectPool.placeablePrefabs.Count;
         for (int i = imageArr.Count - 1; i >= objectPoolCount; i--)
         {
-            Debug.Log("j : " + imageArr.Count);
             Destroy(imageArr[i].gameObject);
             imageArr.RemoveAt(i);
         }

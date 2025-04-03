@@ -27,7 +27,7 @@ public class PlaceablePrefabs
     public PrefabTypes PrefabType;
     public Transform objectPrefab;
     public Sprite objectPreviewImages;
-    public Vector2 size;
+    public Vector2Int size;
 }
 [Serializable]
 public enum PrefabTypes
