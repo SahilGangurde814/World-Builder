@@ -32,7 +32,7 @@ public class UICurrentObjectSelecter : MonoBehaviour
         if(scroll != 0f)
         {
             PanelState(true);
-            Debug.Log(scroll);
+            //Debug.Log(scroll);
 
             if(turnOffCoroutine != null)
             {

@@ -16,12 +16,12 @@ MonoBehaviour:
   - PrefabType: 0
     objectPrefab: {fileID: 1200833713070530827, guid: 127b1f90c54f84840a4a495e6dcbba5e, type: 3}
     objectPreviewImages: {fileID: 21300000, guid: b80f49abdf565e5448579f168e58b45b, type: 3}
-    size: {x: 2, y: 2}
+    size: {x: 2, y: 1}
   - PrefabType: 1
     objectPrefab: {fileID: 4895275589672113156, guid: 9f4df6736f79ec54dae907e24ff894e9, type: 3}
     objectPreviewImages: {fileID: 21300000, guid: f032d9ad9c300e443b52f975a9b8fad2, type: 3}
-    size: {x: 2, y: 2}
+    size: {x: 2, y: 1}
   - PrefabType: 2
     objectPrefab: {fileID: 691308444018255202, guid: c9805e3478ea7ac4ca0f69e851880892, type: 3}
     objectPreviewImages: {fileID: 21300000, guid: 403ea92c1c06dba488c75fc55f7cf7dd, type: 3}
-    size: {x: 2, y: 2}
+    size: {x: 2, y: 1}

@@ -17,25 +17,27 @@ public class GridData : MonoBehaviour
 
         foreach (var position in occupiedPositions)
         {
-            Debug.Log("Occupied Positions : " + position);
             if(placeObjectsData.ContainsKey(position))
             {
-                Debug.Log("Can Not Place Object");
                 return false;
             }
         }
 
-        Debug.Log("Can Not Place Object");
         return true;
     }
 
     public void AddData(Vector3Int Position, GameObject PlacedObject, Vector2Int Size)
     {
-        List<Vector3Int> occupiedPosition =  CalculateSize(Position, Size);
-        PlacementData PlacedData = new PlacementData();
-        PlacedData.PlaceableObject = PlacedObject;
-        PlacedData.occupiedPosition = occupiedPosition;
-        placeObjectsData.Add(Position, PlacedData);
+        List<Vector3Int> _occupiedPosition =  CalculateSize(Position, Size);
+        PlacementData _placedData = new PlacementData();
+        _placedData.PlaceableObject = PlacedObject;
+        _placedData.occupiedPosition = _occupiedPosition;
+        //placeObjectsData.Add(Position, PlacedData);
+
+        foreach (var _position in _occupiedPosition)
+        {
+            placeObjectsData.Add(_position, _placedData);
+        }
     }
 
     public void DestroyPlacedObjectData(Vector3Int key)  // if using cell's centre alignment for object placement use vector3
