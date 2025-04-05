@@ -35,12 +35,24 @@ public class ObjectPlacer : MonoBehaviour
     private float halfHeight;
     private PlaceablePrefabs currentSelectedObjectData;
 
+    private Rotation ObjectRotationType = Rotation.Forward;
+    public enum Rotation
+    {
+        Forward,
+        Backward,
+        Right,
+        Left
+    }
+
     private void Start()
     {
         mainCamera = Camera.main;
 
         placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
         currentSelectedObjectData = objectPool.GetCurrentPrefab(PrefabTypes.Wall);
+
+        Debug.Log("Rotation Type : " + ObjectRotationType.ToString());
+
     }
 
     private void Update()
@@ -92,18 +104,22 @@ public class ObjectPlacer : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
                     previewRotation = previewRotation + horizontalRotationOffset;
+                    SetRotationType(previewRotation);
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha2))
                 {
                     previewRotation = previewRotation - horizontalRotationOffset;
+                    SetRotationType(previewRotation);
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha3))
                 {
                     previewRotation = previewRotation + verticalRotationOffset;
+                    SetRotationType(previewRotation);
                 }
                 else if (Input.GetKeyDown(KeyCode.Alpha4))
                 {
                     previewRotation = previewRotation - verticalRotationOffset;
+                    SetRotationType(previewRotation);
                 }
 
                 //// if object's pivot is in center use this
@@ -114,7 +130,7 @@ public class ObjectPlacer : MonoBehaviour
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
 
-                if (!gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size))
+                if (!gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType))
                 {
                     PreviewMaterial(invalidPosMaterial);
                 }
@@ -147,7 +163,7 @@ public class ObjectPlacer : MonoBehaviour
                 //direction.y = 0;    for object to not rotate on x axis
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-                if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size))
+                if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType))
                 {
                     PlaceObject(placeableObject, cellPos, Quaternion.Euler(previewRotation), placedObjectParent);
                 }
@@ -164,32 +180,51 @@ public class ObjectPlacer : MonoBehaviour
         }
     }
 
-    void PlaceObject(Transform objectHolder, Vector3 position, Quaternion rotation, Transform parent)
+    void SetRotationType(Vector3 _rotation)
     {
-        Instantiate(objectHolder, position /*+ new Vector3(0, halfHeight, 0)*/, rotation, parent);
-        Vector3Int cellPos = grid.WorldToCell(position);
+        // Normalize the rotation to 0-360 range
+        float normalizedY = _rotation.y % 360;
+        if (normalizedY < 0) normalizedY += 360;
+
+        // Use thresholds to determine rotation type
+        if (normalizedY >= 315 || normalizedY < 45)
+            ObjectRotationType = Rotation.Forward;
+        else if (normalizedY >= 45 && normalizedY < 135)
+            ObjectRotationType = Rotation.Right;
+        else if (normalizedY >= 135 && normalizedY < 225)
+            ObjectRotationType = Rotation.Backward;
+        else
+            ObjectRotationType = Rotation.Left;
+
+        Debug.Log("Rotation Type: " + ObjectRotationType.ToString());
+    }
+
+    void PlaceObject(Transform _objectHolder, Vector3 _position, Quaternion _rotation, Transform _parent)
+    {
+        Instantiate(_objectHolder, _position /*+ new Vector3(0, halfHeight, 0)*/, _rotation, _parent);
+        Vector3Int cellPos = grid.WorldToCell(_position);
         Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-        gridData.AddData(cellPos, objectHolder.gameObject, currentSelectedObjectData.size);
+        gridData.AddData(cellPos, _objectHolder.gameObject, currentSelectedObjectData.size, ObjectRotationType);
     }
 
-    void PreveiwObjectState(bool isActive)
+    void PreveiwObjectState(bool _isActive)
     {
-        objectPlaceHolder.gameObject.SetActive(isActive);
+        objectPlaceHolder.gameObject.SetActive(_isActive);
     }
 
-    void PreviewObjectSetup(Vector3 position, Transform Object, Vector3 cameraPos, Vector3 rotation)
+    void PreviewObjectSetup(Vector3 _position, Transform _Object, Vector3 _cameraPos, Vector3 _rotation)
     {
         PreveiwObjectState(true);
-        Object.position = Vector3.Lerp(Object.position, position, 0.2f);
+        _Object.position = Vector3.Lerp(_Object.position, _position, 0.2f);
         //Object.position = position;
-        Vector3 direction = cameraPos - Object.position;
+        Vector3 direction = _cameraPos - _Object.position;
         direction.y = 0;
-        Object.rotation = Quaternion.Euler(rotation);
+        _Object.rotation = Quaternion.Euler(_rotation);
     }
 
-    Vector3 GridToWorldPos(Vector3 hitPos)
+    Vector3 GridToWorldPos(Vector3 _hitPos)
     {
-        Vector3Int cellPos = grid.WorldToCell(hitPos);
+        Vector3Int cellPos = grid.WorldToCell(_hitPos);
         //rayIndicator.gameObject.SetActive(true);
         //rayIndicator.transform.position = grid.CellToWorld(cellPos);
         Vector3 gridToWorldPos = grid.CellToWorld(cellPos);
@@ -230,24 +265,24 @@ public class ObjectPlacer : MonoBehaviour
         placeableObject = selectedObject;
     }
 
-    void PreviewMaterial(Material material)
+    void PreviewMaterial(Material _material)
     {
         Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
         foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
         {
-            materialHoldingObject.GetComponent<MeshRenderer>().material = material;
+            materialHoldingObject.GetComponent<MeshRenderer>().material = _material;
         }
     }
 
-    Transform SetPreviewObject(int listCount, PrefabTypes prefabTypes, Transform selectedObject)
+    Transform SetPreviewObject(int _listCount, PrefabTypes _prefabTypes, Transform _selectedObject)
     {
-        prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
-        PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(prefabTypes);
-        selectedObject = placeablePrefabs.objectPrefab;
-        objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == prefabTypes).objectPrefab;
+        _prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
+        PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(_prefabTypes);
+        _selectedObject = placeablePrefabs.objectPrefab;
+        objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == _prefabTypes).objectPrefab;
         currentSelectedObjectData = placeablePrefabs;
 
-        return selectedObject;
+        return _selectedObject;
     }
 
     //public void DestroyPlacedObject(Vector3Int key)

@@ -11,9 +11,9 @@ public class GridData : MonoBehaviour
         public List<Vector3Int> occupiedPosition;
     }
 
-    public bool CanPlaceObject(Vector3Int Position, Vector2Int Size)
+    public bool CanPlaceObject(Vector3Int _Position, Vector2Int _Size, ObjectPlacer.Rotation _rotation)
     {
-        List<Vector3Int> occupiedPositions = CalculateSize(Position, Size);
+        List<Vector3Int> occupiedPositions = CalculateSize(_Position, _Size, _rotation);
 
         foreach (var position in occupiedPositions)
         {
@@ -26,11 +26,11 @@ public class GridData : MonoBehaviour
         return true;
     }
 
-    public void AddData(Vector3Int Position, GameObject PlacedObject, Vector2Int Size)
+    public void AddData(Vector3Int _Position, GameObject _PlacedObject, Vector2Int _Size, ObjectPlacer.Rotation _rotation)
     {
-        List<Vector3Int> _occupiedPosition =  CalculateSize(Position, Size);
+        List<Vector3Int> _occupiedPosition =  CalculateSize(_Position, _Size, _rotation);
         PlacementData _placedData = new PlacementData();
-        _placedData.PlaceableObject = PlacedObject;
+        _placedData.PlaceableObject = _PlacedObject;
         _placedData.occupiedPosition = _occupiedPosition;
         //placeObjectsData.Add(Position, PlacedData);
 
@@ -40,26 +40,71 @@ public class GridData : MonoBehaviour
         }
     }
 
-    public void DestroyPlacedObjectData(Vector3Int key)  // if using cell's centre alignment for object placement use vector3
+    public void DestroyPlacedObjectData(Vector3Int _key)  // if using cell's centre alignment for object placement use vector3
     {
-        if (placeObjectsData.ContainsKey(key))
+        if (placeObjectsData.ContainsKey(_key))
         {
-            placeObjectsData.Remove(key);
+            placeObjectsData.Remove(_key);
         }
     }
 
-    public List<Vector3Int> CalculateSize(Vector3Int Position, Vector2Int Size)
+    public List<Vector3Int> CalculateSize(Vector3Int _Position, Vector2Int _Size, ObjectPlacer.Rotation _rotationType)
     {
         List<Vector3Int> returnSize = new();
 
-        for(int x = 0; x < Size.x; x++)
+        switch (_rotationType)
         {
-            for(int y = 0; y < Size.y; y++)
-            {
-                returnSize.Add(Position + new Vector3Int(x, 0, y));
-            }
+            case ObjectPlacer.Rotation.Forward:
+
+                for(int x = 0; x < _Size.x; x++)
+                {
+                    for(int y = 0; y < _Size.y; y++)
+                    {
+                        returnSize.Add(_Position + new Vector3Int(x, 0, y));
+                    }
+                }
+                break;
+                //return returnSize;
+
+            case ObjectPlacer.Rotation.Left:
+
+                for (int x = 0; x < _Size.y; x++)
+                {
+                    for (int y = 0; y < _Size.x; y++)
+                    {
+                        returnSize.Add(_Position + new Vector3Int(x, 0, y));
+                    }
+                }
+                break;
+                //return returnSize;
+
+            case ObjectPlacer.Rotation.Right:
+
+                for (int x = 0; x < _Size.y; x++)
+                {
+                    for (int y = 0; y < _Size.x; y++)
+                    {
+                        returnSize.Add(_Position - new Vector3Int(x, 0, y));
+                    }
+                }
+                break;
+
+            case ObjectPlacer.Rotation.Backward:
+
+                for (int x = 0; x < _Size.x; x++)
+                {
+                    for (int y = 0; y < _Size.y; y++)
+                    {
+                        returnSize.Add(_Position - new Vector3Int(x, 0, y));
+                    }
+                }
+                break;
         }
 
+        foreach(Vector3 position in returnSize)
+        {
+            Debug.Log("Occuping Position : " + position);
+        }
         return returnSize;
     }
 }

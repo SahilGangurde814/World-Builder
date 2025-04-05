@@ -34,5 +34,6 @@ public enum PrefabTypes
 {
     Wall,
     Window,
-    Door1
+    Door1,
+    Floor
 }

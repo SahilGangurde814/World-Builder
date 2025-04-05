@@ -83,18 +83,19 @@ public class UICurrentObjectSelecter : MonoBehaviour
             PrefabTypes prefabType = objectPool.placeablePrefabs[i].PrefabType;
             PlaceablePrefabs currentPrefab = objectPool.GetCurrentPrefab(prefabType);
 
-            if(prefabType == PrefabTypes.Wall)
-            {
-                imageArr[i].sprite = currentPrefab.objectPreviewImages;
-            }
-            else if(prefabType == PrefabTypes.Window)
-            {
-                imageArr[i].sprite = currentPrefab.objectPreviewImages;
-            }
-            else if (prefabType == PrefabTypes.Door1)
-            {
-                imageArr[i].sprite = currentPrefab.objectPreviewImages;
-            }
+            imageArr[i].sprite = currentPrefab.objectPreviewImages;
+            //if(prefabType == PrefabTypes.Wall)
+            //{
+            //    imageArr[i].sprite = currentPrefab.objectPreviewImages;
+            //}
+            //else if(prefabType == PrefabTypes.Window)
+            //{
+            //    imageArr[i].sprite = currentPrefab.objectPreviewImages;
+            //}
+            //else if (prefabType == PrefabTypes.Door1)
+            //{
+            //    imageArr[i].sprite = currentPrefab.objectPreviewImages;
+            //}
         }
 
         int objectPoolCount = objectPool.placeablePrefabs.Count;
