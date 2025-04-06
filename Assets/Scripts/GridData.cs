@@ -42,9 +42,14 @@ public class GridData : MonoBehaviour
 
     public void DestroyPlacedObjectData(Vector3Int _key)  // if using cell's centre alignment for object placement use vector3
     {
+
         if (placeObjectsData.ContainsKey(_key))
         {
-            placeObjectsData.Remove(_key);
+            PlacementData data = placeObjectsData[_key];
+            foreach(Vector3Int _position in data.occupiedPosition)
+            {
+                placeObjectsData.Remove(_position);
+            }
         }
     }
 
@@ -101,10 +106,10 @@ public class GridData : MonoBehaviour
                 break;
         }
 
-        foreach(Vector3 position in returnSize)
-        {
-            Debug.Log("Occuping Position : " + position);
-        }
+        //foreach(Vector3 position in returnSize)
+        //{
+        //    Debug.Log("Occuping Position : " + position);
+        //}
         return returnSize;
     }
 }

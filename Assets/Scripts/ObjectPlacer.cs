@@ -51,7 +51,7 @@ public class ObjectPlacer : MonoBehaviour
         placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
         currentSelectedObjectData = objectPool.GetCurrentPrefab(PrefabTypes.Wall);
 
-        Debug.Log("Rotation Type : " + ObjectRotationType.ToString());
+        //Debug.Log("Rotation Type : " + ObjectRotationType.ToString());
 
     }
 
@@ -93,6 +93,52 @@ public class ObjectPlacer : MonoBehaviour
 
             if (Input.GetMouseButton(0))
             {
+                if(currentSelectedObjectData.PrefabType == PrefabTypes.Wall)
+                {
+                    Transform hitTransform = hitInfo.transform;
+                    if(hitTransform.tag == "Floor")
+                    {
+                        Debug.Log("Wall Type");
+                        ObjectsOnFloorPlacement floorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
+                        ObjectsOnFloorPlacement.Edge edge = new ObjectsOnFloorPlacement.Edge();
+                        Vector3Int floorPos = grid.WorldToCell(hitInfo.transform.position);
+                        Vector3Int offset = Vector3Int.zero;
+                        switch (ObjectRotationType)
+                        {
+                            case Rotation.Forward:
+                                edge = ObjectsOnFloorPlacement.Edge.Up;
+                                offset = new Vector3Int(0, 0, 2);
+                                break;
+                            case Rotation.Backward:
+                                edge = ObjectsOnFloorPlacement.Edge.Down;
+                                offset = new Vector3Int(2, 0, 0);
+                                break;
+                            case Rotation.Left:
+                                edge = ObjectsOnFloorPlacement.Edge.Left;
+                                offset = new Vector3Int(0, 0, 0);
+                                break;
+                            case Rotation.Right:
+                                edge = ObjectsOnFloorPlacement.Edge.Right;
+                                offset = new Vector3Int(2, 0, 2);
+                                break;
+                        }
+                        Vector3Int wallPos = floorPos + offset;
+                        bool isPlaceable = floorData.isEdgePlaceable(edge);
+
+                        
+                        Debug.Log("floor pos : " + floorPos + "Wall Pos : " + wallPos);
+                        if(isPlaceable)
+                        {
+                            Debug.Log("Object can be placed");
+                            //floorData.SetFloorEdge(ObjectsOnFloorPlacement.Edge.Up, currentSelectedObjectData.objectPrefab);
+                        }
+                        else
+                        {
+                            Debug.Log("Not Possible");
+                        }
+                    }
+                }
+
                 //isCastRay = true;
 
                 if (Input.GetMouseButtonDown(1) && hasCancelledPlacement)
@@ -139,7 +185,7 @@ public class ObjectPlacer : MonoBehaviour
                     PreviewMaterial(validPosMaterial);
                 }
 
-                if (hasCancelledPlacement)
+                if (hasCancelledPlacement /*&& currentSelectedObjectData.PrefabType != PrefabTypes.Wall*/)
                 {
 
                     if (currentHitPos != hitPos)
@@ -163,13 +209,13 @@ public class ObjectPlacer : MonoBehaviour
                 //direction.y = 0;    for object to not rotate on x axis
                 Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
                 Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-                if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType))
+                if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType) && currentSelectedObjectData.PrefabType != PrefabTypes.Wall)
                 {
                     PlaceObject(placeableObject, cellPos, Quaternion.Euler(previewRotation), placedObjectParent);
                 }
                 else
                 {
-                    Debug.Log("Position occupied");
+                    Debug.Log("Position occupied OR Object Type is Wall");
                 }
             }
         }
@@ -196,7 +242,7 @@ public class ObjectPlacer : MonoBehaviour
         else
             ObjectRotationType = Rotation.Left;
 
-        Debug.Log("Rotation Type: " + ObjectRotationType.ToString());
+        //Debug.Log("Rotation Type: " + ObjectRotationType.ToString());
     }
 
     void PlaceObject(Transform _objectHolder, Vector3 _position, Quaternion _rotation, Transform _parent)
