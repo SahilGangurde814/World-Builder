@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
@@ -37,9 +36,10 @@ public class ObjectPlacer : MonoBehaviour
     private PlaceablePrefabs currentSelectedObjectData;
 
     private Rotation ObjectRotationType = Rotation.Forward;
-    private Vector3Int wallPos;
+    private Vector3 wallPos;
     ObjectsOnFloorPlacement currentFloorData;
     ObjectsOnFloorPlacement.Edge currentFloorEdge;
+    private bool isRayhitFloor = false;
     public enum Rotation
     {
         Forward,
@@ -123,7 +123,7 @@ public class ObjectPlacer : MonoBehaviour
                     Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
                     if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType) /*&& currentSelectedObjectData.PrefabType == PrefabTypes.Floor*/)
                     {
-                        PlaceObject(placeableObject, cellPos, /*Quaternion.Euler(previewRotation)*/ Quaternion.identity, placedObjectParent);
+                        PlaceObject(placeableObject, /*cellPos*/ hitPos, /*Quaternion.Euler(previewRotation)*/ Quaternion.identity, placedObjectParent);
                     }
                     else
                     {
@@ -144,7 +144,6 @@ public class ObjectPlacer : MonoBehaviour
                         Debug.Log("Edge already occupied");
                     }
                 }
-
             }
         }
         else
@@ -181,16 +180,20 @@ public class ObjectPlacer : MonoBehaviour
                 _currentHitPos = _hitPos;
                 if (currentSelectedObjectData.PrefabType != PrefabTypes.Floor)
                 {
-                    PreviewObjectSetup(cellPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, previewRotation);
+                    PreviewObjectSetup(wallPos /*cellPos*/ + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, previewRotation);
                 }
                 else
                 {
-                    PreviewObjectSetup(cellPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
+                    PreviewObjectSetup(_hitPos /*cellPos*/+ new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
                 }
             }
             else
             {
-                PreviewObjectSetup(cellPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, previewRotation);
+            }
+
+            if(isRayhitFloor == false)
+            {
+                PreviewObjectSetup(_hitPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, previewRotation);
             }
         }
     }
@@ -230,6 +233,7 @@ public class ObjectPlacer : MonoBehaviour
             if (hitTransform.tag == "Floor")
             {
                 //Debug.Log("Wall Type");
+                isRayhitFloor = true;
                 currentFloorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
                 currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
                 Vector3Int floorPos = grid.WorldToCell(_hitInfo.transform.position);
@@ -253,7 +257,7 @@ public class ObjectPlacer : MonoBehaviour
                         offset = new Vector3Int(2, 0, 2);
                         break;
                 }
-                wallPos = floorPos + offset;
+                wallPos = /*floorPos*/ hitTransform.position + offset;
                 bool isPlaceable = currentFloorData.isEdgePlaceable(currentFloorEdge);
 
 
@@ -268,9 +272,12 @@ public class ObjectPlacer : MonoBehaviour
                 //    Debug.Log("Not Possible");
                 //}
             }
+            else
+            {
+                isRayhitFloor = false;
+            }
         }
     }
-
 
     void SetRotationType(Vector3 _rotation)
     {
