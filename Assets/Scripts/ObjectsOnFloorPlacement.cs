@@ -13,8 +13,9 @@ public class ObjectsOnFloorPlacement : MonoBehaviour
         Right
     }
 
-    public void SetFloorEdge(Edge _edge, Transform _PlaceableObject)
+    public void SetFloorEdge(Edge _edge, Transform _PlaceableObject, Vector3Int _position, Quaternion _rotation)
     {
+        Instantiate(_PlaceableObject, _position, _rotation, this.transform);
         FloorEdgeDat.Add( _edge, _PlaceableObject );
     }
 
