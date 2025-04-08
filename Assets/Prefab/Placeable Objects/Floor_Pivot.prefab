@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 1214983118071508831}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.42904165, y: 1.1814913e-16, z: -5.3159647}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -130,6 +130,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: b0b40895ea04413419fba7a8264fc089, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: eecb02e6d850ff44ea27b432fc80dcda, type: 2}
     - target: {fileID: 919132149155446097, guid: b0b40895ea04413419fba7a8264fc089, type: 3}
       propertyPath: m_Name
       value: floor

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
@@ -9,43 +10,40 @@ public class ObjectPlacer : MonoBehaviour
     [Header("Placement Attributes")]
     [SerializeField] private LayerMask layerToPlaceObjects = 6;
     [SerializeField] private Transform objectToPlace;
-    [SerializeField] private Transform objectPlaceHolder;
-    [SerializeField] private PlaceableObjectData objectPool;
     [SerializeField] private Vector3 horizontalRotationOffset = new Vector3(0, 30, 0);
     [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
     [SerializeField] private Transform rayIndicator;
     [SerializeField] private Transform placedObjectParent;
-    [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
-
     [SerializeField] private GridData gridData;
-
-    public Material invalidPosMaterial;
-    public Material validPosMaterial;
+    [SerializeField] private ObjectPreview objectPreview;
 
     public Grid grid;
+    public PlaceableObjectData objectPool;
+    [Range(5, 30)] public float maxObjectPlacementDistance = 10;
+    [HideInInspector] public bool hasCancelledPlacement = true;
+    [HideInInspector] public int selectedObjectIndex;
+    [HideInInspector] public PlaceablePrefabs currentSelectedObjectData;
+    [HideInInspector] public Rotation ObjectRotationType = Rotation.Forward;
+    [HideInInspector] public Vector3 wallPosOffset1;
+    [HideInInspector] public Vector3 wallPosOffset2;
+    [HideInInspector] public bool isRayhitFloor = false;
 
-    [Range(5, 30)] 
-    public float maxObjectPlacementDistance = 10;
     private Camera mainCamera;
-    private bool hasCancelledPlacement = true;
-    private Vector3 previewRotation = Vector3.zero;
-    private int selectedObjectIndex;
     private Transform placeableObject;
     private Transform placeableObjectPreview;
     private float halfHeight;
-    private PlaceablePrefabs currentSelectedObjectData;
-
-    private Rotation ObjectRotationType = Rotation.Forward;
     private Vector3 wallPos;
-    ObjectsOnFloorPlacement currentFloorData;
-    ObjectsOnFloorPlacement.Edge currentFloorEdge;
-    private bool isRayhitFloor = false;
+    private ObjectsOnFloorPlacement currentFloorData;
+    private ObjectsOnFloorPlacement.Edge currentFloorEdge;
+
     public enum Rotation
     {
         Forward,
         Backward,
         Right,
-        Left
+        Left,
+        Horizontal,
+        Vertical
     }
 
     private void Start()
@@ -54,9 +52,6 @@ public class ObjectPlacer : MonoBehaviour
 
         placeableObject = objectPool.GetCurrentPrefab(PrefabTypes.Wall).objectPrefab;
         currentSelectedObjectData = objectPool.GetCurrentPrefab(PrefabTypes.Wall);
-
-        //Debug.Log("Rotation Type : " + ObjectRotationType.ToString());
-
     }
 
     private void Update()
@@ -102,12 +97,31 @@ public class ObjectPlacer : MonoBehaviour
                 if (Input.GetMouseButtonDown(1) && hasCancelledPlacement)
                 {
                     hasCancelledPlacement = false;
-                    PreveiwObjectState(hasCancelledPlacement);
+                    objectPreview.PreveiwObjectState(hasCancelledPlacement);
                 }
 
                 SetObjectRotation();
 
-                SpawnPreviewObject(gridCellToWorldPos, currentHitPos, hitPos, mainCameraPos);
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) return;
+
+                    if (objectPreview.previewRotation.y == 90)
+                    {
+                        objectPreview.previewRotation = new Vector3(0, 0, 0);
+                        ObjectRotationType = Rotation.Vertical;
+                    }
+                    else
+                    {
+                        objectPreview.previewRotation = new Vector3(0, 90, 0);
+                        ObjectRotationType = Rotation.Horizontal;
+                    }
+                    //previewRotation = previewRotation.y == 90 ? new Vector3(0, 0, 0) : new Vector3(0, 90, 0);
+                    //SetRotationType(previewRotation);
+                    
+                }
+
+                objectPreview.SpawnPreviewObject(gridCellToWorldPos, currentHitPos, hitPos, mainCameraPos);
             }
             
             if(Input.GetMouseButtonUp(0))
@@ -116,7 +130,7 @@ public class ObjectPlacer : MonoBehaviour
 
                 if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) 
                 { 
-                    PreveiwObjectState(false);
+                    objectPreview.PreveiwObjectState(false);
                     //Vector3 direction = mainCameraPos - objectPlaceHolder.position;
                     //direction.y = 0;    for object to not rotate on x axis
                     Vector3Int cellPos = grid.WorldToCell(gridCellToWorldPos);
@@ -124,6 +138,7 @@ public class ObjectPlacer : MonoBehaviour
                     if(gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType) /*&& currentSelectedObjectData.PrefabType == PrefabTypes.Floor*/)
                     {
                         PlaceObject(placeableObject, /*cellPos*/ hitPos, /*Quaternion.Euler(previewRotation)*/ Quaternion.identity, placedObjectParent);
+                        Debug.Log("Placed object");
                     }
                     else
                     {
@@ -132,12 +147,13 @@ public class ObjectPlacer : MonoBehaviour
                 }
                 else if(currentSelectedObjectData.PrefabType != PrefabTypes.Floor)
                 {
-                    PreveiwObjectState(false);
+                    objectPreview.PreveiwObjectState(false);
                     //PlaceObject(placeableObject, wallPos, Quaternion.Euler(previewRotation), placedObjectParent);
                     if(currentFloorData == null) return;
                     if (currentFloorData.isEdgePlaceable(currentFloorEdge))
                     {
-                        currentFloorData.SetFloorEdge(currentFloorEdge, currentSelectedObjectData.objectPrefab, wallPos, Quaternion.Euler(previewRotation));
+                        currentFloorData.SetFloorEdge(currentFloorEdge, currentSelectedObjectData.objectPrefab, wallPos, Quaternion.Euler(objectPreview.previewRotation));
+                        Debug.Log(currentFloorEdge.ToString());
                     }
                     else
                     {
@@ -149,79 +165,33 @@ public class ObjectPlacer : MonoBehaviour
         else
         {
             rayIndicator.gameObject.SetActive(false);
-            PreveiwObjectState(false);
-        }
-    }
-
-    void SpawnPreviewObject(Vector3 _gridCellToWorldPos, Vector3 _currentHitPos, Vector3 _hitPos, Vector3 _mainCameraPos)
-    {
-        //// if object's pivot is in center use this
-        //MeshRenderer meshRenderer = objectPlaceHolder.GetComponentInChildren<MeshRenderer>();
-        //float height = meshRenderer.bounds.size.y;
-        //halfHeight = height / 2;
-
-        Vector3Int cellPos = grid.WorldToCell(_gridCellToWorldPos);
-        Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
-
-        if (!gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType))
-        {
-            PreviewMaterial(invalidPosMaterial);
-        }
-        else
-        {
-            PreviewMaterial(validPosMaterial);
-        }
-
-        if (hasCancelledPlacement /*&& currentSelectedObjectData.PrefabType != PrefabTypes.Wall*/)
-        {
-
-            if (_currentHitPos != _hitPos)
-            {
-                _currentHitPos = _hitPos;
-                if (currentSelectedObjectData.PrefabType != PrefabTypes.Floor)
-                {
-                    PreviewObjectSetup(wallPos /*cellPos*/ + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, previewRotation);
-                }
-                else
-                {
-                    PreviewObjectSetup(_hitPos /*cellPos*/+ new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
-                }
-            }
-            else
-            {
-            }
-
-            if(isRayhitFloor == false)
-            {
-                PreviewObjectSetup(_hitPos + new Vector3(0.005f, 0, 0.005f) /*+ new Vector3(0, halfHeight, 0)*/, objectPlaceHolder, _mainCameraPos, previewRotation);
-            }
+            objectPreview.PreveiwObjectState(false);
         }
     }
 
     void SetObjectRotation()
     {
-        if (currentSelectedObjectData.PrefabType != PrefabTypes.Floor)
+        if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) return;
+        
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                previewRotation = previewRotation + horizontalRotationOffset;
-                SetRotationType(previewRotation);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                previewRotation = previewRotation - horizontalRotationOffset;
-                SetRotationType(previewRotation);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                previewRotation = previewRotation + verticalRotationOffset;
-                SetRotationType(previewRotation);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                previewRotation = previewRotation - verticalRotationOffset;
-                SetRotationType(previewRotation);
-            }
+            objectPreview.previewRotation = objectPreview.previewRotation + horizontalRotationOffset;
+            SetRotationType(objectPreview.previewRotation);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            objectPreview.previewRotation = objectPreview.previewRotation - horizontalRotationOffset;
+            SetRotationType(objectPreview.previewRotation);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            objectPreview.previewRotation = objectPreview.previewRotation + verticalRotationOffset;
+            SetRotationType(objectPreview.previewRotation);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            objectPreview.previewRotation = objectPreview.previewRotation - verticalRotationOffset;
+            SetRotationType(objectPreview.previewRotation);
         }
     }
 
@@ -238,6 +208,8 @@ public class ObjectPlacer : MonoBehaviour
                 currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
                 Vector3Int floorPos = grid.WorldToCell(_hitInfo.transform.position);
                 Vector3Int offset = Vector3Int.zero;
+                Vector3Int offset1 = Vector3Int.zero;
+                Vector3Int offset2 = Vector3Int.zero;
                 switch (ObjectRotationType)
                 {
                     case Rotation.Forward:
@@ -256,8 +228,19 @@ public class ObjectPlacer : MonoBehaviour
                         currentFloorEdge = ObjectsOnFloorPlacement.Edge.Right;
                         offset = new Vector3Int(2, 0, 2);
                         break;
+                    case Rotation.Horizontal:
+                        offset1 = new Vector3Int(0, 0, 0);
+                        offset2 = new Vector3Int(0, 0, 2);
+                        break;
+                    case Rotation.Vertical:
+                        offset1 = new Vector3Int(0, 0, 2);
+                        offset2 = new Vector3Int(2, 0, 2);
+                        break;
                 }
                 wallPos = /*floorPos*/ hitTransform.position + offset;
+                wallPosOffset1 = hitTransform.position + offset1;
+                wallPosOffset2 = hitTransform.position + offset2;
+
                 bool isPlaceable = currentFloorData.isEdgePlaceable(currentFloorEdge);
 
 
@@ -306,20 +289,8 @@ public class ObjectPlacer : MonoBehaviour
         gridData.AddData(cellPos, _objectHolder.gameObject, currentSelectedObjectData.size, ObjectRotationType);
     }
 
-    void PreveiwObjectState(bool _isActive)
-    {
-        objectPlaceHolder.gameObject.SetActive(_isActive);
-    }
-
-    void PreviewObjectSetup(Vector3 _position, Transform _Object, Vector3 _cameraPos, Vector3 _rotation)
-    {
-        PreveiwObjectState(true);
-        _Object.position = Vector3.Lerp(_Object.position, _position, 0.2f);
-        //Object.position = position;
-        Vector3 direction = _cameraPos - _Object.position;
-        direction.y = 0;
-        _Object.rotation = Quaternion.Euler(_rotation);
-    }
+    
+    
 
     Vector3 GridToWorldPos(Vector3 _hitPos)
     {
@@ -336,59 +307,31 @@ public class ObjectPlacer : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         int listCount = objectPool.placeablePrefabs.Count;
         Transform selectedObject = placeableObject;
-        Transform previewObject = objectPlaceHolder;
+        Transform previewObject = objectPreview.objectPlaceHolder;
         PrefabTypes prefabTypes = PrefabTypes.Wall;
 
         if (scroll != 0)
         {
             if(scroll > 0)
             {
-                if (objectPlaceHolder.gameObject.activeSelf)
+                if (objectPreview.objectPlaceHolder.gameObject.activeSelf)
                 {
-                    PreveiwObjectState(false);
+                    objectPreview.PreveiwObjectState(false);
                 }
                 selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
-                selectedObject = SetPreviewObject(listCount, prefabTypes, previewObject);
+                selectedObject = objectPreview.SetPreviewObject(listCount, prefabTypes, previewObject);
             }
             else
             {
-                if (objectPlaceHolder.gameObject.activeSelf)
+                if (objectPreview.objectPlaceHolder.gameObject.activeSelf)
                 {
-                    PreveiwObjectState(false);
+                    objectPreview.PreveiwObjectState(false);
                 }
                 selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
-                selectedObject = SetPreviewObject(listCount, prefabTypes, selectedObject);
+                selectedObject = objectPreview.SetPreviewObject(listCount, prefabTypes, selectedObject);
             }
         }
 
         placeableObject = selectedObject;
     }
-
-    void PreviewMaterial(Material _material)
-    {
-        Transform[] materialHoldingObjectsArr = objectPlaceHolder.GetComponent<MaterialData>().materialHoldingObjects;
-        foreach (Transform materialHoldingObject in materialHoldingObjectsArr)
-        {
-            materialHoldingObject.GetComponent<MeshRenderer>().material = _material;
-        }
-    }
-
-    Transform SetPreviewObject(int _listCount, PrefabTypes _prefabTypes, Transform _selectedObject)
-    {
-        _prefabTypes = objectPool.placeablePrefabs[selectedObjectIndex].PrefabType;
-        PlaceablePrefabs placeablePrefabs = objectPool.GetCurrentPrefab(_prefabTypes);
-        _selectedObject = placeablePrefabs.objectPrefab;
-        objectPlaceHolder = preveiwObjectsData.Find((x) => x.PrefabType == _prefabTypes).objectPrefab;
-        currentSelectedObjectData = placeablePrefabs;
-
-        return _selectedObject;
-    }
-
-    //public void DestroyPlacedObject(Vector3Int key)
-    //{
-    //    if(placeObjectsData.ContainsKey(key))
-    //    {
-    //        placeObjectsData.Remove(key);
-    //    }
-    //}
 }

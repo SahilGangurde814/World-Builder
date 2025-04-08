@@ -3,6 +3,7 @@ using UnityEngine;
 public class DestroyPlacedObject : MonoBehaviour
 {
     [SerializeField] private ObjectPlacer objectPlacer;
+    [SerializeField] private ObjectPreview objectPreview;
     [SerializeField] private LayerMask placedObjectLayer;
     [SerializeField] private Material defaultMaterial;
     [SerializeField] private GridData gridData;
@@ -32,7 +33,7 @@ public class DestroyPlacedObject : MonoBehaviour
                     selectedObject.GetComponentInChildren<MeshRenderer>().material = defaultMaterial;
                 }
                 selectedObject = hit.transform;
-                hit.transform.GetComponentInChildren<MeshRenderer>().material = objectPlacer.invalidPosMaterial;
+                hit.transform.GetComponentInChildren<MeshRenderer>().material = objectPreview.invalidPosMaterial;
             }
             else if(!isHit && selectedObject != null)
             {
