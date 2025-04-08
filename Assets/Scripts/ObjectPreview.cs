@@ -12,7 +12,7 @@ public class ObjectPreview : MonoBehaviour
     public Material invalidPosMaterial;
     public Material validPosMaterial;
     [HideInInspector] public Vector3 previewRotation = Vector3.zero;
-
+    public Vector3 wallPos = Vector3.zero;
 
     public void SpawnPreviewObject(Vector3 _gridCellToWorldPos, Vector3 _currentHitPos, Vector3 _hitPos, Vector3 _mainCameraPos)
     {
@@ -33,8 +33,32 @@ public class ObjectPreview : MonoBehaviour
                 _currentHitPos = _hitPos;
                 if (objectPlacer.currentSelectedObjectData.PrefabType != PrefabTypes.Floor)
                 {
-                    if (dist1 < dist2) PreviewObjectSetup(objectPlacer.wallPosOffset1 + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, previewRotation);
-                    else PreviewObjectSetup(objectPlacer.wallPosOffset2 + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, previewRotation);
+                    if (dist1 < dist2)
+                    {
+                        Debug.Log(objectPlacer.wallPosOffset1 + " Offset1");
+                        PreviewObjectSetup(objectPlacer.wallPosOffset1 + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, previewRotation);
+                        if (objectPlacer.ObjectRotationType == ObjectPlacer.Rotation.Horizontal)
+                        {
+                            objectPlacer.currentFloorEdge = ObjectsOnFloorPlacement.Edge.Down;
+                        }
+                        else
+                        {
+                            objectPlacer.currentFloorEdge = ObjectsOnFloorPlacement.Edge.Left;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log(objectPlacer.wallPosOffset2 + " Offset2");
+                        PreviewObjectSetup(objectPlacer.wallPosOffset2 + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, previewRotation);
+                        if (objectPlacer.ObjectRotationType == ObjectPlacer.Rotation.Horizontal)
+                        {
+                            objectPlacer.currentFloorEdge = ObjectsOnFloorPlacement.Edge.Up;
+                        }
+                        else
+                        {
+                            objectPlacer.currentFloorEdge = ObjectsOnFloorPlacement.Edge.Right;
+                        }
+                    }
                 }
                 else
                 {

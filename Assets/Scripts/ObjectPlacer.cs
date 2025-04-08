@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
@@ -23,7 +22,7 @@ public class ObjectPlacer : MonoBehaviour
     [HideInInspector] public bool hasCancelledPlacement = true;
     [HideInInspector] public int selectedObjectIndex;
     [HideInInspector] public PlaceablePrefabs currentSelectedObjectData;
-    [HideInInspector] public Rotation ObjectRotationType = Rotation.Forward;
+    [HideInInspector] public Rotation ObjectRotationType = Rotation.Horizontal;
     [HideInInspector] public Vector3 wallPosOffset1;
     [HideInInspector] public Vector3 wallPosOffset2;
     [HideInInspector] public bool isRayhitFloor = false;
@@ -34,14 +33,14 @@ public class ObjectPlacer : MonoBehaviour
     private float halfHeight;
     private Vector3 wallPos;
     private ObjectsOnFloorPlacement currentFloorData;
-    private ObjectsOnFloorPlacement.Edge currentFloorEdge;
+    [HideInInspector] public ObjectsOnFloorPlacement.Edge currentFloorEdge;
 
     public enum Rotation
     {
-        Forward,
-        Backward,
-        Right,
-        Left,
+        //Forward,
+        //Backward,
+        //Right,
+        //Left,
         Horizontal,
         Vertical
     }
@@ -100,7 +99,7 @@ public class ObjectPlacer : MonoBehaviour
                     objectPreview.PreveiwObjectState(hasCancelledPlacement);
                 }
 
-                SetObjectRotation();
+                //SetObjectRotation();
 
                 if (Input.GetKeyDown(KeyCode.R))
                 {
@@ -169,31 +168,31 @@ public class ObjectPlacer : MonoBehaviour
         }
     }
 
-    void SetObjectRotation()
-    {
-        if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) return;
+    //void SetObjectRotation()
+    //{
+    //    if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) return;
         
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            objectPreview.previewRotation = objectPreview.previewRotation + horizontalRotationOffset;
-            SetRotationType(objectPreview.previewRotation);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            objectPreview.previewRotation = objectPreview.previewRotation - horizontalRotationOffset;
-            SetRotationType(objectPreview.previewRotation);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            objectPreview.previewRotation = objectPreview.previewRotation + verticalRotationOffset;
-            SetRotationType(objectPreview.previewRotation);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            objectPreview.previewRotation = objectPreview.previewRotation - verticalRotationOffset;
-            SetRotationType(objectPreview.previewRotation);
-        }
-    }
+    //    if (Input.GetKeyDown(KeyCode.Alpha1))
+    //    {
+    //        objectPreview.previewRotation = objectPreview.previewRotation + horizontalRotationOffset;
+    //        SetRotationType(objectPreview.previewRotation);
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.Alpha2))
+    //    {
+    //        objectPreview.previewRotation = objectPreview.previewRotation - horizontalRotationOffset;
+    //        SetRotationType(objectPreview.previewRotation);
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.Alpha3))
+    //    {
+    //        objectPreview.previewRotation = objectPreview.previewRotation + verticalRotationOffset;
+    //        SetRotationType(objectPreview.previewRotation);
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.Alpha4))
+    //    {
+    //        objectPreview.previewRotation = objectPreview.previewRotation - verticalRotationOffset;
+    //        SetRotationType(objectPreview.previewRotation);
+    //    }
+    //}
 
     void SetFloorEdge(RaycastHit _hitInfo)
     {
@@ -212,22 +211,22 @@ public class ObjectPlacer : MonoBehaviour
                 Vector3Int offset2 = Vector3Int.zero;
                 switch (ObjectRotationType)
                 {
-                    case Rotation.Forward:
-                        currentFloorEdge = ObjectsOnFloorPlacement.Edge.Up;
-                        offset = new Vector3Int(0, 0, 2);
-                        break;
-                    case Rotation.Backward:
-                        currentFloorEdge = ObjectsOnFloorPlacement.Edge.Down;
-                        offset = new Vector3Int(2, 0, 0);
-                        break;
-                    case Rotation.Left:
-                        currentFloorEdge = ObjectsOnFloorPlacement.Edge.Left;
-                        offset = new Vector3Int(0, 0, 0);
-                        break;
-                    case Rotation.Right:
-                        currentFloorEdge = ObjectsOnFloorPlacement.Edge.Right;
-                        offset = new Vector3Int(2, 0, 2);
-                        break;
+                    //case Rotation.Forward:
+                    //    currentFloorEdge = ObjectsOnFloorPlacement.Edge.Up;
+                    //    offset = new Vector3Int(0, 0, 2);
+                    //    break;
+                    //case Rotation.Backward:
+                    //    currentFloorEdge = ObjectsOnFloorPlacement.Edge.Down;
+                    //    offset = new Vector3Int(2, 0, 0);
+                    //    break;
+                    //case Rotation.Left:
+                    //    currentFloorEdge = ObjectsOnFloorPlacement.Edge.Left;
+                    //    offset = new Vector3Int(0, 0, 0);
+                    //    break;
+                    //case Rotation.Right:
+                    //    currentFloorEdge = ObjectsOnFloorPlacement.Edge.Right;
+                    //    offset = new Vector3Int(2, 0, 2);
+                    //    break;
                     case Rotation.Horizontal:
                         offset1 = new Vector3Int(0, 0, 0);
                         offset2 = new Vector3Int(0, 0, 2);
@@ -262,24 +261,24 @@ public class ObjectPlacer : MonoBehaviour
         }
     }
 
-    void SetRotationType(Vector3 _rotation)
-    {
-        // Normalize the rotation to 0-360 range
-        float normalizedY = _rotation.y % 360;
-        if (normalizedY < 0) normalizedY += 360;
+    //void SetRotationType(Vector3 _rotation)
+    //{
+    //    // Normalize the rotation to 0-360 range
+    //    float normalizedY = _rotation.y % 360;
+    //    if (normalizedY < 0) normalizedY += 360;
 
-        // Use thresholds to determine rotation type
-        if (normalizedY >= 315 || normalizedY < 45)
-            ObjectRotationType = Rotation.Forward;
-        else if (normalizedY >= 45 && normalizedY < 135)
-            ObjectRotationType = Rotation.Right;
-        else if (normalizedY >= 135 && normalizedY < 225)
-            ObjectRotationType = Rotation.Backward;
-        else
-            ObjectRotationType = Rotation.Left;
+    //    // Use thresholds to determine rotation type
+    //    if (normalizedY >= 315 || normalizedY < 45)
+    //        ObjectRotationType = Rotation.Forward;
+    //    else if (normalizedY >= 45 && normalizedY < 135)
+    //        ObjectRotationType = Rotation.Right;
+    //    else if (normalizedY >= 135 && normalizedY < 225)
+    //        ObjectRotationType = Rotation.Backward;
+    //    else
+    //        ObjectRotationType = Rotation.Left;
 
-        //Debug.Log("Rotation Type: " + ObjectRotationType.ToString());
-    }
+    //    //Debug.Log("Rotation Type: " + ObjectRotationType.ToString());
+    //}
 
     void PlaceObject(Transform _objectHolder, Vector3 _position, Quaternion _rotation, Transform _parent)
     {

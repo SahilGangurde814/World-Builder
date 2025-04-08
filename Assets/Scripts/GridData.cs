@@ -59,7 +59,7 @@ public class GridData : MonoBehaviour
 
         switch (_rotationType)
         {
-            case ObjectPlacer.Rotation.Forward:
+            case ObjectPlacer.Rotation.Horizontal:
 
                 for(int x = 0; x < _Size.x; x++)
                 {
@@ -71,7 +71,7 @@ public class GridData : MonoBehaviour
                 break;
                 //return returnSize;
 
-            case ObjectPlacer.Rotation.Left:
+            case ObjectPlacer.Rotation.Vertical:
 
                 for (int x = 0; x < _Size.y; x++)
                 {
@@ -83,27 +83,27 @@ public class GridData : MonoBehaviour
                 break;
                 //return returnSize;
 
-            case ObjectPlacer.Rotation.Right:
+            //case ObjectPlacer.Rotation.Right:
 
-                for (int x = 0; x < _Size.y; x++)
-                {
-                    for (int y = 0; y < _Size.x; y++)
-                    {
-                        returnSize.Add(_Position - new Vector3Int(x, 0, y));
-                    }
-                }
-                break;
+            //    for (int x = 0; x < _Size.y; x++)
+            //    {
+            //        for (int y = 0; y < _Size.x; y++)
+            //        {
+            //            returnSize.Add(_Position - new Vector3Int(x, 0, y));
+            //        }
+            //    }
+            //    break;
 
-            case ObjectPlacer.Rotation.Backward:
+            //case ObjectPlacer.Rotation.Backward:
 
-                for (int x = 0; x < _Size.x; x++)
-                {
-                    for (int y = 0; y < _Size.y; y++)
-                    {
-                        returnSize.Add(_Position - new Vector3Int(x, 0, y));
-                    }
-                }
-                break;
+            //    for (int x = 0; x < _Size.x; x++)
+            //    {
+            //        for (int y = 0; y < _Size.y; y++)
+            //        {
+            //            returnSize.Add(_Position - new Vector3Int(x, 0, y));
+            //        }
+            //    }
+            //    break;
         }
 
         //foreach(Vector3 position in returnSize)
