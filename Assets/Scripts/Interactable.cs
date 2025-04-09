@@ -5,13 +5,21 @@ public class Interactable : MonoBehaviour
 {
     [SerializeField] private Transform door;
     [SerializeField] private Transform interactabelUIObject;
+    [SerializeField] private float rotationSpeed = 0.5f;
+
+    private DoorState doorState = DoorState.Close;
+
+    public enum DoorState
+    {
+        Close,
+        Open
+    }
 
     public void Interact()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("Interact");
-            door.transform.rotation = Quaternion.Euler(0, /*door.transform.rotation.y + 90*/ 0, 0);
+            OpenCloseDoor();
         }
     }
 
@@ -21,5 +29,26 @@ public class Interactable : MonoBehaviour
         {
             interactabelUIObject?.gameObject.SetActive(isActive);
         }
+    }
+
+    void OpenCloseDoor()
+    {
+        Quaternion startRotation = door.rotation;
+        Quaternion resultRotation = Quaternion.Euler(0, 0, 0);
+
+        switch (doorState)
+        {
+            case DoorState.Close:
+                resultRotation = Quaternion.Euler(0, 90, 0);
+                doorState = DoorState.Open;
+                break;
+
+            case DoorState.Open:
+                resultRotation = Quaternion.Euler(0, 0, 0);
+                doorState = DoorState.Close;
+                break;
+        }
+
+        door.transform.rotation = resultRotation;
     }
 }
