@@ -26,13 +26,13 @@ public class InteractableDetecter : MonoBehaviour
                 lastInteractable?.InteractableUiState(false);
                 interactable.InteractableUiState(true);
             }
-
             interactable.Interact();
             lastInteractable = interactable;
         }
 
         else if(lastInteractable != null)
         {
+            Debug.Log("Interactable");
             lastInteractable.InteractableUiState(false);
             lastInteractable = null;
         }
