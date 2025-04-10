@@ -64,7 +64,8 @@ public class ObjectPreview : MonoBehaviour
                 }
                 else
                 {
-                    PreviewObjectSetup(_hitPos + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
+                    Debug.Log("wallOffset1 : " + objectPlacer.wallPosOffset1);
+                    PreviewObjectSetup(objectPlacer.wallPosOffset1 /*+ new Vector3(0.005f, 0, 0.005f)*/, objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
                 }
             }
 
