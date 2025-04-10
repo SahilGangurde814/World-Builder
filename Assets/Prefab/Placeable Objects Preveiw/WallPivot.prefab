@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   materialHoldingObjects:
-  - {fileID: 2749920598520489752}
+  - {fileID: 82105518850350784}
 --- !u!1 &5795209697791189114
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,6 +190,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8eaeb9f0ea8972c4cb1003343681d230, type: 2}
+    - target: {fileID: 7125172756977067478, guid: b223c348bb0bbbd47a45d49d11f25274, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

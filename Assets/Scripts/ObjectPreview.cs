@@ -12,7 +12,7 @@ public class ObjectPreview : MonoBehaviour
     public Material invalidPosMaterial;
     public Material validPosMaterial;
     [HideInInspector] public Vector3 previewRotation = Vector3.zero;
-    public Vector3 wallPos = Vector3.zero;
+    [HideInInspector] public Vector3 wallPos = Vector3.zero;
 
     public void SpawnPreviewObject(Vector3 _gridCellToWorldPos, Vector3 _currentHitPos, Vector3 _hitPos, Vector3 _mainCameraPos)
     {
@@ -86,7 +86,7 @@ public class ObjectPreview : MonoBehaviour
 
     public void PreviewObjectSetup(Vector3 _position, Transform _Object, Vector3 _cameraPos, Vector3 _rotation)
     {
-        PreveiwObjectState(true);
+        PreviewObjectState(true);
         _Object.position = Vector3.Lerp(_Object.position, _position, 0.2f);
         //Object.position = position;
         Vector3 direction = _cameraPos - _Object.position;
@@ -94,7 +94,7 @@ public class ObjectPreview : MonoBehaviour
         _Object.rotation = Quaternion.Euler(_rotation);
     }
 
-    public void PreveiwObjectState(bool _isActive)
+    public void PreviewObjectState(bool _isActive)
     {
         objectPlaceHolder.gameObject.SetActive(_isActive);
     }

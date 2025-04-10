@@ -7,7 +7,7 @@ using UnityEngine;
 public class ObjectPlacer : MonoBehaviour
 {
     [Header("Placement Attributes")]
-    [SerializeField] private LayerMask layerToPlaceObjects = 6;
+    [SerializeField] private LayerMask layerToPlaceObjects = 6 ; // Ground Layer
     [SerializeField] private Transform objectToPlace;
     [SerializeField] private Vector3 horizontalRotationOffset = new Vector3(0, 30, 0);
     [SerializeField] private Vector3 verticalRotationOffset = new Vector3(0, 0, 30);
@@ -53,69 +53,60 @@ public class ObjectPlacer : MonoBehaviour
     private void Update()
     {
         SetPlaceableObject();
-        PlaceObject();
+        PlacementHandler();
     }
 
-    void PlaceObject()
+    void PlacementHandler()
     {
         Vector3 mainCameraPos = mainCamera.transform.position;
         Vector3 mainCameraForward = mainCamera.transform.forward;
-
         Ray ray = new Ray(mainCameraPos, mainCameraForward);
+
         RaycastHit hitInfo;
-
-        Vector3 hitPos;
-        Vector3 hitNorm;
-        Vector3 currentHitPos = Vector3.zero;
-        Vector3 gridCellToWorldPos;
-
         bool isRayHitSurface = Physics.Raycast(ray, out hitInfo, maxObjectPlacementDistance, layerToPlaceObjects);
 
-        if (isRayHitSurface)
-        {
-            hitPos = hitInfo.point;
-            hitNorm = hitInfo.normal;
-
-            gridCellToWorldPos = GridToWorldPos(hitPos);
-
-            hasCancelledPlacement = Input.GetMouseButtonDown(0) ? true : hasCancelledPlacement;
-
-            if (Input.GetMouseButton(0))
-            {
-                SetFloorEdge(hitInfo);
-
-                if (Input.GetMouseButtonDown(1) && hasCancelledPlacement)
-                {
-                    hasCancelledPlacement = false;
-                    objectPreview.PreveiwObjectState(hasCancelledPlacement);
-                }
-
-                RotatePlacingObject();
-
-                objectPreview.SpawnPreviewObject(gridCellToWorldPos, currentHitPos, hitPos, mainCameraPos);
-            }
-
-            if (Input.GetMouseButtonUp(0))
-            {
-                if (hasCancelledPlacement == false) return;
-
-                switch (currentSelectedObjectData.PrefabType)
-                {
-                    case PrefabTypes.Wall:
-                    case PrefabTypes.Window:
-                    case PrefabTypes.Door1:
-                        PlaceObjectOnFloor();
-                        break;
-                    case PrefabTypes.Floor:
-                        PlaceFloor(hitPos, gridCellToWorldPos);
-                        break;
-                }
-            }
-        }
-        else
+        if (!isRayHitSurface)
         {
             rayIndicator.gameObject.SetActive(false);
-            objectPreview.PreveiwObjectState(false);
+            objectPreview.PreviewObjectState(false);
+
+            return;
+        }
+
+        Vector3 hitPos = hitInfo.point;
+        Vector3 hitNorm = hitInfo.normal;
+        Vector3 gridCellToWorldPos = GridToWorldPos(hitPos);
+        Vector3 currentHitPos = Vector3.zero;
+
+        hasCancelledPlacement = Input.GetMouseButtonDown(0) ? true : hasCancelledPlacement;
+
+        if (Input.GetMouseButton(0))
+        {
+            SetFloorEdge(hitInfo);
+            RotatePlacingObject();
+
+            if (Input.GetMouseButtonDown(1) && hasCancelledPlacement)
+            {
+                hasCancelledPlacement = false;
+                objectPreview.PreviewObjectState(hasCancelledPlacement);
+            }
+
+            objectPreview.SpawnPreviewObject(gridCellToWorldPos, currentHitPos, hitPos, mainCameraPos);
+        }
+
+        if (Input.GetMouseButtonUp(0) && hasCancelledPlacement)
+        {
+            switch (currentSelectedObjectData.PrefabType)
+            {
+                case PrefabTypes.Wall:
+                case PrefabTypes.Window:
+                case PrefabTypes.Door1:
+                    PlaceObjectOnFloor();
+                    break;
+                case PrefabTypes.Floor:
+                    PlaceFloor(hitPos, gridCellToWorldPos);
+                    break;
+            }
         }
     }
 
@@ -125,17 +116,14 @@ public class ObjectPlacer : MonoBehaviour
         {
             if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) return;
 
-            if (objectPreview.previewRotation.y == 90)
-            {
-                objectPreview.previewRotation = new Vector3(0, 0, 0);
-                ObjectRotationType = Rotation.Horizontal;
-            }
-            else
-            {
-                objectPreview.previewRotation = new Vector3(0, 90, 0);
-                ObjectRotationType = Rotation.Vertical;
-            }
+            float yRotation = objectPreview.previewRotation.y;
+            Vector3 rotationOffset = Vector3.zero;
+            bool isHorizontal = Mathf.Approximately(yRotation, 0);
 
+            rotationOffset = isHorizontal ? new Vector3(0, 90, 0) : new Vector3(0, 0, 0);
+            ObjectRotationType = isHorizontal ? Rotation.Vertical : Rotation.Horizontal;
+
+            objectPreview.previewRotation = rotationOffset;
             Debug.Log(ObjectRotationType.ToString() + "Rotation Type");
         }
     }
@@ -144,13 +132,17 @@ public class ObjectPlacer : MonoBehaviour
     {
         Vector3Int cellPos = grid.WorldToCell(_gridCellToWorldPos);
         Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
+        bool canPlaceObject = gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType);
 
-        objectPreview.PreveiwObjectState(false);
+        objectPreview.PreviewObjectState(false);
+        TryPlaceObject(canPlaceObject, _hitPos);
+    }
 
-        if (gridData.CanPlaceObject(cellPos, currentSelectedObjectData.size, ObjectRotationType))
+    void TryPlaceObject(bool _canPlaceObject, Vector3 _hitPos)
+    {
+        if (_canPlaceObject)
         {
             PlaceObject(placeableObject, _hitPos, Quaternion.identity, placedObjectParent);
-
             Debug.Log("Placed object");
         }
         else
@@ -161,66 +153,67 @@ public class ObjectPlacer : MonoBehaviour
 
     void PlaceObjectOnFloor()
     {
-        objectPreview.PreveiwObjectState(false);
+        objectPreview.PreviewObjectState(false);
 
         if (currentFloorData == null) return;
 
-        if (currentFloorData.isEdgePlaceable(currentFloorEdge))
-        {
-            currentFloorData.SetFloorEdge(currentFloorEdge, currentSelectedObjectData.objectPrefab, currentPlacingPos, Quaternion.Euler(objectPreview.previewRotation));
-
-            Debug.Log(currentFloorEdge.ToString());
-        }
-        else
+        if (!currentFloorData.isEdgePlaceable(currentFloorEdge))
         {
             Debug.Log("Edge already occupied");
+            return;
         }
+
+        currentFloorData.SetFloorEdge(
+            currentFloorEdge, 
+            currentSelectedObjectData.objectPrefab, 
+            currentPlacingPos, 
+            Quaternion.Euler(objectPreview.previewRotation));
+
+        Debug.Log(currentFloorEdge.ToString());
     }
 
     void SetFloorEdge(RaycastHit _hitInfo)
     {
-        if (currentSelectedObjectData.PrefabType != PrefabTypes.Floor)
+        if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor) return;
+
+        Transform hitTransform = _hitInfo.transform;
+
+        isRayhitFloor = hitTransform.tag == "Floor";
+
+        if (!isRayhitFloor) return;
+
+        Vector3Int offset1, offset2;
+
+        currentFloorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
+        currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
+
+        switch (ObjectRotationType)
         {
-            Transform hitTransform = _hitInfo.transform;
-
-            if (hitTransform.tag == "Floor")
-            {
-                Vector3Int offset1 = Vector3Int.zero;
-                Vector3Int offset2 = Vector3Int.zero;
-
-                isRayhitFloor = true;
-                currentFloorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
-                currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
-
-                switch (ObjectRotationType)
-                {
-                    case Rotation.Horizontal:
-                        offset1 = new Vector3Int(0, 0, 0);
-                        offset2 = new Vector3Int(0, 0, 3);
-                        break;
-                    case Rotation.Vertical:
-                        offset1 = new Vector3Int(0, 0, 3);
-                        offset2 = new Vector3Int(3, 0, 3);
-                        break;
-                }
-
-                wallPosOffset1 = hitTransform.position + offset1;
-                wallPosOffset2 = hitTransform.position + offset2;
-
-                bool isPlaceable = currentFloorData.isEdgePlaceable(currentFloorEdge);
-            }
-            else
-            {
-                isRayhitFloor = false;
-            }
+            case Rotation.Horizontal:
+                offset1 = new Vector3Int(0, 0, 0);
+                offset2 = new Vector3Int(0, 0, 3);
+                break;
+            case Rotation.Vertical:
+                offset1 = new Vector3Int(0, 0, 3);
+                offset2 = new Vector3Int(3, 0, 3);
+                break;
+            default:
+                offset1 = offset2 = Vector3Int.zero;
+                break;
         }
+
+        wallPosOffset1 = hitTransform.position + offset1;
+        wallPosOffset2 = hitTransform.position + offset2;
+
+        //bool isPlaceable = currentFloorData.isEdgePlaceable(currentFloorEdge);
     }
 
     void PlaceObject(Transform _objectHolder, Vector3 _position, Quaternion _rotation, Transform _parent)
     {
-        Instantiate(_objectHolder, _position, _rotation, _parent);
         Vector3Int cellPos = grid.WorldToCell(_position);
         Vector3 cellCenterWorld = grid.GetCellCenterWorld(cellPos);
+        
+        Instantiate(_objectHolder, _position, _rotation, _parent);
         gridData.AddData(cellPos, _objectHolder.gameObject, currentSelectedObjectData.size, ObjectRotationType);
     }
 
@@ -235,35 +228,23 @@ public class ObjectPlacer : MonoBehaviour
     void SetPlaceableObject()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll == 0) return;
+        
         int listCount = objectPool.placeablePrefabs.Count;
-        Transform selectedObject = placeableObject;
         Transform previewObject = objectPreview.objectPlaceHolder;
         PrefabTypes prefabTypes = PrefabTypes.Wall;
 
-        if (scroll != 0)
+        HidePreviewIfPossible();
+
+        selectedObjectIndex = (scroll > 0) ? (selectedObjectIndex - 1 + listCount) % listCount : (selectedObjectIndex + 1) % listCount;
+        placeableObject = objectPreview.SetPreviewObject(listCount, prefabTypes, placeableObject);
+    }
+
+    void HidePreviewIfPossible()
+    {
+        if (objectPreview.objectPlaceHolder.gameObject.activeSelf)
         {
-            if (scroll > 0)
-            {
-                if (objectPreview.objectPlaceHolder.gameObject.activeSelf)
-                {
-                    objectPreview.PreveiwObjectState(false);
-                }
-
-                selectedObjectIndex = (selectedObjectIndex - 1 + listCount) % listCount;
-                selectedObject = objectPreview.SetPreviewObject(listCount, prefabTypes, previewObject);
-            }
-            else
-            {
-                if (objectPreview.objectPlaceHolder.gameObject.activeSelf)
-                {
-                    objectPreview.PreveiwObjectState(false);
-                }
-
-                selectedObjectIndex = (selectedObjectIndex + 1) % listCount;
-                selectedObject = objectPreview.SetPreviewObject(listCount, prefabTypes, selectedObject);
-            }
+            objectPreview.PreviewObjectState(false);
         }
-
-        placeableObject = selectedObject;
     }
 }
