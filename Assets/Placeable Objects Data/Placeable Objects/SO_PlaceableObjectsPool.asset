@@ -28,4 +28,4 @@ MonoBehaviour:
   - PrefabType: 3
     objectPrefab: {fileID: 3295286197155152465, guid: 094057768a3566446828db1cce5a648a, type: 3}
     objectPreviewImages: {fileID: 21300000, guid: ad7fddd6bb1bb2c4d91af61ffc992558, type: 3}
-    size: {x: 4, y: 4}
+    size: {x: 3, y: 3}

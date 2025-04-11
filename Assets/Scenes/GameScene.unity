@@ -1148,7 +1148,7 @@ MonoBehaviour:
   - PrefabType: 3
     objectPrefab: {fileID: 8126784139630868085}
     objectPreviewImages: {fileID: 21300000, guid: ad7fddd6bb1bb2c4d91af61ffc992558, type: 3}
-    size: {x: 4, y: 3}
+    size: {x: 2, y: 2}
   objectPlaceHolder: {fileID: 1083267476}
   invalidPosMaterial: {fileID: 2100000, guid: 2a587abfc7e745f4aa1ffb9a3f1180d8, type: 2}
   validPosMaterial: {fileID: 2100000, guid: 13e626154e13a3248998f3ce49811984, type: 2}
