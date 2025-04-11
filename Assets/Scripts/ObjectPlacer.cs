@@ -187,14 +187,16 @@ public class ObjectPlacer : MonoBehaviour
 
         if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor)
         {
-            wallPosOffset1 = isRayhitFloor ? _hitInfo.transform.position + new Vector3Int(3, 0, 0) : _hitInfo.point;
+            Vector3 floorPos = hitTransform.position;
+
+            wallPosOffset1 = isRayhitFloor ? floorPos + new Vector3Int(3, 0, 0) : _hitInfo.point;
             return;
         }
         
         if (!isRayhitFloor) return;
 
-        Vector3Int offset1, offset2;
 
+        Vector3Int offset1, offset2;
         currentFloorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
         currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
 
