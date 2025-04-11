@@ -181,19 +181,39 @@ public class ObjectPlacer : MonoBehaviour
         //}
 
         Transform hitTransform = _hitInfo.transform;
+        Vector3 offset1 = Vector3.zero; 
+        Vector3 offset2 = Vector3.zero;
 
         isRayhitFloor = hitTransform.tag == "Floor";
 
 
         if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor)
         {
-            wallPosOffset1 = isRayhitFloor ? _hitInfo.transform.position + new Vector3Int(3, 0, 0) : _hitInfo.point;
+            Vector3 offsetPos = Vector3.zero;
+
+            if (isRayhitFloor) 
+            {
+                Vector3 floorPos = hitTransform.position;
+                offset1 = floorPos + new Vector3(3, 0, 0);
+                offset2 = floorPos + new Vector3(-3, 0, 0); 
+
+                float offsetDist1 = Vector3.Distance(_hitInfo.point, offset1);
+                float offsetDist2 = Vector3.Distance(_hitInfo.point, offset2);
+
+                offsetPos = offsetDist1 < offsetDist2 ? offset1 : offset2;   
+
+                Debug.Log("offset 1 " + offsetDist1);
+                Debug.Log("offset 2 " + offsetDist2);
+            }
+
+            //offsetPos =  < offset2 ? offset1 : offset2;
+            wallPosOffset1 = isRayhitFloor ? offsetPos : _hitInfo.point;
+            Debug.Log(_hitInfo.ToString() + "Floor Position");
             return;
         }
         
         if (!isRayhitFloor) return;
 
-        Vector3Int offset1, offset2;
 
         currentFloorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
         currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
