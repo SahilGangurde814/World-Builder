@@ -15,6 +15,7 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Transform placedObjectParent;
     [SerializeField] private GridData gridData;
     [SerializeField] private ObjectPreview objectPreview;
+    [SerializeField] private FloorPlacer floorPlacer;
 
     public Grid grid;
     public PlaceableObjectData objectPool;
@@ -104,7 +105,9 @@ public class ObjectPlacer : MonoBehaviour
                     PlaceObjectOnFloor();
                     break;
                 case PrefabTypes.Floor:
-                    PlaceFloor(hitPos, gridCellToWorldPos);
+                    //PlaceFloor(hitPos, gridCellToWorldPos);
+                    objectPreview.PreviewObjectState(false);
+                    floorPlacer.PlaceFloor(hitPos, currentSelectedObjectData.objectPrefab);
                     break;
             }
         }

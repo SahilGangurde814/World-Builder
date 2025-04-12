@@ -1058,6 +1058,7 @@ GameObject:
   - component: {fileID: 691876240}
   - component: {fileID: 691876239}
   - component: {fileID: 691876241}
+  - component: {fileID: 691876242}
   m_Layer: 0
   m_Name: ObjectPlacer
   m_TagString: Untagged
@@ -1087,6 +1088,7 @@ MonoBehaviour:
   placedObjectParent: {fileID: 214028391}
   gridData: {fileID: 1123030881}
   objectPreview: {fileID: 691876241}
+  floorPlacer: {fileID: 691876242}
   grid: {fileID: 1628742179}
   objectPool: {fileID: 11400000, guid: b029cea094d15a44989c1c16b1a535dc, type: 2}
   maxObjectPlacementDistance: 10
@@ -1154,6 +1156,18 @@ MonoBehaviour:
   validPosMaterial: {fileID: 2100000, guid: 13e626154e13a3248998f3ce49811984, type: 2}
   previewRotation: {x: 0, y: 0, z: 0}
   wallPos: {x: 0, y: 0, z: 0}
+--- !u!114 &691876242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691876238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c859fcd785525594187d1278f20c94d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &730552556
 PrefabInstance:
   m_ObjectHideFlags: 0
