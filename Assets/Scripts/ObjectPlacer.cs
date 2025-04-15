@@ -199,22 +199,22 @@ public class ObjectPlacer : MonoBehaviour
         if (!isRayhitFloor) return;
 
 
-        Vector3Int offset1, offset2;
+        Vector3 offset1, offset2;
         currentFloorData = hitTransform.GetComponent<ObjectsOnFloorPlacement>();
         currentFloorEdge = new ObjectsOnFloorPlacement.Edge();
 
         switch (ObjectRotationType)
         {
             case Rotation.Horizontal:
-                offset1 = new Vector3Int(0, 0, 0);
-                offset2 = new Vector3Int(0, 0, 3);
+                offset1 = new Vector3(0, 0, 0);
+                offset2 = new Vector3(0, 0, 2.8f);
                 break;
             case Rotation.Vertical:
-                offset1 = new Vector3Int(0, 0, 3);
-                offset2 = new Vector3Int(3, 0, 3);
+                offset1 = new Vector3(0, 0, 3f);
+                offset2 = new Vector3(3f, 0, 3f);
                 break;
             default:
-                offset1 = offset2 = Vector3Int.zero;
+                offset1 = offset2 = Vector3.zero;
                 break;
         }
 

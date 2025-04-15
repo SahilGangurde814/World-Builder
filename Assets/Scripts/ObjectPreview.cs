@@ -7,6 +7,7 @@ public class ObjectPreview : MonoBehaviour
     [SerializeField] private ObjectPlacer objectPlacer;
     [SerializeField] private GridData gridData;
     [SerializeField] private List<PlaceablePrefabs> preveiwObjectsData;
+    [SerializeField] private FloorPlacer floorPlacer;
 
     public Transform objectPlaceHolder;
     public Material invalidPosMaterial;
@@ -65,7 +66,7 @@ public class ObjectPreview : MonoBehaviour
                 else
                 {
                     //Debug.Log("wallOffset1 : " + objectPlacer.wallPosOffset1);
-                    PreviewObjectSetup(objectPlacer.wallPosOffset1 /*+ new Vector3(0.005f, 0, 0.005f)*/, objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
+                    PreviewObjectSetup(floorPlacer.CalculateSnapPos(_hitPos), objectPlaceHolder, _mainCameraPos, new Vector3(0, 0, 0));
                 }
             }
 
