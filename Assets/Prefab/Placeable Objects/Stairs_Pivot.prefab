@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5342810698728726050
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 697142051317819601}
+  m_Layer: 0
+  m_Name: Stairs_Pivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &697142051317819601
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5342810698728726050}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.70244753, y: 2.2831027e-16, z: -9.699401}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 219111558803388849}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1631867956868429392
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 697142051317819601}
+    m_Modifications:
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5791535376087505999, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: m_Name
+      value: WoodStairs2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8597458431166426280, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: fa915efd77d7b85498666d4deb118247, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+--- !u!4 &219111558803388849 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1562748587611541473, guid: 7d8c6691a25667d4ca90871dbd53f466, type: 3}
+  m_PrefabInstance: {fileID: 1631867956868429392}
+  m_PrefabAsset: {fileID: 0}

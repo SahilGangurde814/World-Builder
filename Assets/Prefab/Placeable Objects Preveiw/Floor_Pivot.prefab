@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 771906949402883366}
   - component: {fileID: 6365274342439102082}
-  - component: {fileID: 1628502611793388751}
   m_Layer: 0
   m_Name: Floor_Pivot
   m_TagString: Untagged
@@ -49,27 +48,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   materialHoldingObjects:
   - {fileID: 2770740372264499626}
---- !u!65 &1628502611793388751
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1410385503445646414}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2, y: 0.12633888, z: 2}
-  m_Center: {x: 1, y: 0.04493446, z: 1}
 --- !u!1 &3258483097265038096
 GameObject:
   m_ObjectHideFlags: 0

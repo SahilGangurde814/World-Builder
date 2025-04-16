@@ -96,7 +96,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2019380128989937727}
-  - component: {fileID: 3543096809285823481}
   - component: {fileID: 4102383054198257112}
   m_Layer: 7
   m_Name: Door_Pivot
@@ -123,27 +122,6 @@ Transform:
   - {fileID: 1785598476523586056}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3543096809285823481
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414865273494412233}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.0017571, y: 2.3768587, z: 0.13141182}
-  m_Center: {x: 0.9943199, y: 1.2186284, z: -0.00084868073}
 --- !u!114 &4102383054198257112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,7 +359,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4710523542487006449, guid: 441114138470bd343897686b255e0ab9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4710523542487006449, guid: 441114138470bd343897686b255e0ab9, type: 3}
       propertyPath: m_LocalPosition.y

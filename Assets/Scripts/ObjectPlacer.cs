@@ -37,6 +37,14 @@ public class ObjectPlacer : MonoBehaviour
     private Vector3 wallPos;
     private ObjectsOnFloorPlacement currentFloorData;
 
+
+    #region Tags
+
+    private const string PLACEDOBJECT_TAG = "PlacedObject";
+    private const string FLOOR_TAG = "Floor";
+
+    #endregion
+
     public enum Rotation
     {
         Horizontal,
@@ -102,6 +110,7 @@ public class ObjectPlacer : MonoBehaviour
                 case PrefabTypes.Wall:
                 case PrefabTypes.Window:
                 case PrefabTypes.Door1:
+                case PrefabTypes.Stairs:
                     PlaceObjectOnFloor();
                     break;
                 case PrefabTypes.Floor:
@@ -185,7 +194,7 @@ public class ObjectPlacer : MonoBehaviour
 
         Transform hitTransform = _hitInfo.transform;
 
-        isRayhitFloor = hitTransform.tag == "Floor";
+        isRayhitFloor = hitTransform.tag == FLOOR_TAG || hitTransform.tag == PLACEDOBJECT_TAG;
 
 
         if (currentSelectedObjectData.PrefabType == PrefabTypes.Floor)
@@ -206,12 +215,12 @@ public class ObjectPlacer : MonoBehaviour
         switch (ObjectRotationType)
         {
             case Rotation.Horizontal:
-                offset1 = new Vector3(0, 0, 0);
-                offset2 = new Vector3(0, 0, 2.8f);
+                offset1 = new Vector3(0, 0, -1.3f);
+                offset2 = new Vector3(0f, 0, 1.3f);
                 break;
             case Rotation.Vertical:
-                offset1 = new Vector3(0, 0, 3f);
-                offset2 = new Vector3(3f, 0, 3f);
+                offset1 = new Vector3(-1.5f, 0, 0f);
+                offset2 = new Vector3(1.5f, 0, 0f);
                 break;
             default:
                 offset1 = offset2 = Vector3.zero;
@@ -262,5 +271,10 @@ public class ObjectPlacer : MonoBehaviour
         {
             objectPreview.PreviewObjectState(false);
         }
+    }
+
+    public ObjectsOnFloorPlacement.Edge GetCurrentFloorEdge()
+    {
+        return currentFloorEdge;
     }
 }
