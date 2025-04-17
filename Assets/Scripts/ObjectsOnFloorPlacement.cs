@@ -19,6 +19,11 @@ public class ObjectsOnFloorPlacement : MonoBehaviour
         {
             _rotation = Quaternion.Euler(0, 180, 0);
         }
+        else if (_edge == Edge.Left) 
+        {
+            _rotation = Quaternion.Euler(0, 270, 0);
+            Debug.Log("Rotation : " + _rotation);
+        }
         
         Instantiate(_PlaceableObject, _position, _rotation, this.transform);
         FloorEdgeDat.Add( _edge, _PlaceableObject );

@@ -36,7 +36,8 @@ public class ObjectPreview : MonoBehaviour
                 {
                     if (dist1 < dist2)
                     {
-                        objectPlacer.currentPlacingPos = objectPlacer.wallPosOffset1;
+                        //objectPlacer.currentPlacingPos = objectPlacer.wallPosOffset1;
+                        objectPlacer.SetCurrentPlacingPos(objectPlacer.wallPosOffset1);
                         PreviewObjectSetup(objectPlacer.wallPosOffset1 + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, previewRotation);
 
                         if (objectPlacer.ObjectRotationType == ObjectPlacer.Rotation.Horizontal)
@@ -50,7 +51,8 @@ public class ObjectPreview : MonoBehaviour
                     }
                     else
                     {
-                        objectPlacer.currentPlacingPos = objectPlacer.wallPosOffset2;
+                        //objectPlacer.currentPlacingPos = objectPlacer.wallPosOffset2;
+                        objectPlacer.SetCurrentPlacingPos(objectPlacer.wallPosOffset2);
                         PreviewObjectSetup(objectPlacer.wallPosOffset2 + new Vector3(0.005f, 0, 0.005f), objectPlaceHolder, _mainCameraPos, previewRotation);
 
                         if (objectPlacer.ObjectRotationType == ObjectPlacer.Rotation.Horizontal)

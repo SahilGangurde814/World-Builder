@@ -89,6 +89,7 @@ public class ObjectPlacer : MonoBehaviour
 
         hasCancelledPlacement = Input.GetMouseButtonDown(0) ? true : hasCancelledPlacement;
 
+        // Show preview
         if (Input.GetMouseButton(0))
         {
             SetFloorEdge(hitInfo);
@@ -103,6 +104,7 @@ public class ObjectPlacer : MonoBehaviour
             objectPreview.SpawnPreviewObject(gridCellToWorldPos, currentHitPos, hitPos, mainCameraPos);
         }
 
+        // Place Object
         if (Input.GetMouseButtonUp(0) && hasCancelledPlacement)
         {
             switch (currentSelectedObjectData.PrefabType)
@@ -215,11 +217,11 @@ public class ObjectPlacer : MonoBehaviour
         switch (ObjectRotationType)
         {
             case Rotation.Horizontal:
-                offset1 = new Vector3(0, 0, -1.3f);
+                offset1 = new Vector3(0.2f, 0, -1.5f);
                 offset2 = new Vector3(0f, 0, 1.3f);
                 break;
             case Rotation.Vertical:
-                offset1 = new Vector3(-1.5f, 0, 0f);
+                offset1 = new Vector3(-1.3f, 0, -0.2f);
                 offset2 = new Vector3(1.5f, 0, 0f);
                 break;
             default:
@@ -276,5 +278,10 @@ public class ObjectPlacer : MonoBehaviour
     public ObjectsOnFloorPlacement.Edge GetCurrentFloorEdge()
     {
         return currentFloorEdge;
+    }
+
+    public void SetCurrentPlacingPos(Vector3 _pos)
+    {
+        currentPlacingPos = _pos;
     }
 }
