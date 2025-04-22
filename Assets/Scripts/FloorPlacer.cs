@@ -7,7 +7,7 @@ public class FloorPlacer : MonoBehaviour
     private float floorSize = 3f;
     private List<Transform> placedFloors = new List<Transform>();
     Vector3 snapPos;
-    public void PlaceFloor(Vector3 _rayHitPos, Transform _floorTransform)
+    public void PlaceFloor(Vector3 _rayHitPos, Transform _floorTransform, bool _isRayHittingWall, Transform _hitObjectTransform)
     {
         snapPos = _rayHitPos;
 
@@ -19,7 +19,8 @@ public class FloorPlacer : MonoBehaviour
             return;
         }
 
-        snapPos = CalculateSnapPos(_rayHitPos);
+        Vector3 verticalOffset = _hitObjectTransform.position + new Vector3(0, 3f, -1.3f);
+        snapPos = _isRayHittingWall ? verticalOffset : CalculateSnapPos(_rayHitPos);
 
         GameObject newFloor = Instantiate(_floorTransform.gameObject, snapPos, Quaternion.identity);
         placedFloors.Add(newFloor.transform);

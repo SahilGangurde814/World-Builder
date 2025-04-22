@@ -107,6 +107,15 @@ public class ObjectPlacer : MonoBehaviour
         // Place Object
         if (Input.GetMouseButtonUp(0) && hasCancelledPlacement)
         {
+            Transform hitObject = hitInfo.transform;
+            bool ishittingWall = false;
+            if(hitObject.name == "WallPivot(Clone)")
+            {
+                ishittingWall = true;
+            }
+            Debug.Log(ishittingWall + "is hitting wall");
+
+
             switch (currentSelectedObjectData.PrefabType)
             {
                 case PrefabTypes.Wall:
@@ -118,7 +127,7 @@ public class ObjectPlacer : MonoBehaviour
                 case PrefabTypes.Floor:
                     //PlaceFloor(hitPos, gridCellToWorldPos);
                     objectPreview.PreviewObjectState(false);
-                    floorPlacer.PlaceFloor(hitPos, currentSelectedObjectData.objectPrefab);
+                    floorPlacer.PlaceFloor(hitPos, currentSelectedObjectData.objectPrefab, ishittingWall, hitObject);
                     break;
             }
         }
