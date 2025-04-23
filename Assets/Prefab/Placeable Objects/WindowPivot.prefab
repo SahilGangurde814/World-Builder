@@ -5017,6 +5017,7 @@ GameObject:
   - component: {fileID: 4895275589672113156}
   - component: {fileID: 8946332942126062376}
   - component: {fileID: 8517849233027678682}
+  - component: {fileID: 421221241557236552}
   m_Layer: 7
   m_Name: WindowPivot
   m_TagString: PlacedObject
@@ -5080,6 +5081,18 @@ MonoBehaviour:
   - {fileID: 6136582223516310733}
   - {fileID: 3215910000755578687}
   - {fileID: 7364470479709405727}
+--- !u!114 &421221241557236552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6012154065987505290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09ddb85a48ad74849921e225e0fee206, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2357419344409056021
 PrefabInstance:
   m_ObjectHideFlags: 0
