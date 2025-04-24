@@ -26,6 +26,14 @@ public class FloorPlacer : MonoBehaviour
         placedFloors.Add(newFloor.transform);
     }
 
+    public void PlaceRoof(Vector3 _rayHitPos, Transform _floorTransform, Transform _hitObjectTransform)
+    {
+        Vector3 verticalOffset = _hitObjectTransform.position + new Vector3(0, 3f, 0.2f);
+        snapPos = verticalOffset;
+
+        GameObject newFloor = Instantiate(_floorTransform.gameObject, snapPos, Quaternion.identity);
+    }
+
 
     public List<Transform> GetPlacedFloorsData() { return placedFloors; }
     public void SetPlacedFloorsData(Transform _floor)

@@ -36,5 +36,6 @@ public enum PrefabTypes
     Window,
     Door1,
     Floor,
-    Stairs
+    Stairs,
+    Roof
 }

@@ -126,9 +126,18 @@ public class ObjectPlacer : MonoBehaviour
                     SetPlacementData(hitInfo);
                     break;
                 case PrefabTypes.Floor:
+
                     //PlaceFloor(hitPos, gridCellToWorldPos);
                     objectPreview.PreviewObjectState(false);
                     floorPlacer.PlaceFloor(hitPos, currentSelectedObjectData.objectPrefab, ishittingWall, hitObject);
+                    break;
+
+                case PrefabTypes.Roof:
+                    
+                    objectPreview.PreviewObjectState(false);
+                    if (ishittingWall) 
+                        floorPlacer.PlaceRoof(hitPos, currentSelectedObjectData.objectPrefab, hitObject);
+
                     break;
             }
         }
