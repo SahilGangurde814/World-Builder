@@ -123,6 +123,7 @@ public class ObjectPlacer : MonoBehaviour
                 case PrefabTypes.Door1:
                 case PrefabTypes.Stairs:
                     PlaceObjectOnFloor();
+                    SetPlacementData(hitInfo);
                     break;
                 case PrefabTypes.Floor:
                     //PlaceFloor(hitPos, gridCellToWorldPos);
@@ -131,6 +132,19 @@ public class ObjectPlacer : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private void SetPlacementData(RaycastHit _hitInfo)
+    {
+        PlacementData placementData = _hitInfo.transform.GetComponent<PlacementData>();
+
+        if (placementData == null)
+        {
+            Debug.Log("Placement data is null");
+            return;
+        }
+        placementData.SetPlacedEdge(currentFloorEdge);
+        placementData.SetRotation(ObjectRotationType);
     }
 
     void RotatePlacingObject()
